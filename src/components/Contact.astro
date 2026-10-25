@@ -1,0 +1,81 @@
+---
+// Location + contact: address, hours (placeholder until confirmed), WhatsApp / Call / Instagram,
+// and a click-to-load Google map (nothing is fetched from Google until the visitor asks; saves bandwidth).
+import Section from './Section.astro';
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+import { type Locale, getDictionary } from '@/i18n';
+import { HOURS, SOCIAL, mapEmbedUrl, mapSearchUrl, telLink, whatsappLink } from '@/data/site';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const hours = HOURS?.[locale] ?? null;
+---
+
+<Section id="contact" eyebrow={t.contact.eyebrow} title={t.contact.title} intro={t.contact.intro} tone="circuit">
+  <div class="mt-12 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+    <div class="space-y-6 rounded-xl border border-white/10 bg-navy-800/80 p-7 shadow-card" data-reveal>
+      <div class="flex gap-4">
+        <Icon name="pin" class="mt-1 size-6 shrink-0 text-violet" />
+        <div>
+          <h3 class="font-semibold text-white">{t.contact.addressLabel}</h3>
+          <p class="mt-1 text-ink-muted">{t.footer.address}</p>
+          <a href={mapSearchUrl()} target="_blank" rel="noopener" class="mt-2 inline-block text-sm font-semibold text-violet underline-offset-4 hover:underline">
+            {t.contact.mapOpen}<span class="sr-only"> {t.a11y.opensInNewTab}</span>
+          </a>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <svg class="mt-1 size-6 shrink-0 text-violet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" stroke-linecap="round" />
+        </svg>
+        <div>
+          <h3 class="font-semibold text-white">{t.contact.hoursLabel}</h3>
+          <p class="mt-1 text-ink-muted">{hours ?? t.contact.hoursPending}</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-3 pt-2">
+        <Button href={whatsappLink(t.whatsapp.general)} icon="whatsapp" external newTabLabel={t.a11y.opensInNewTab}>
+          {t.cta.whatsapp}
+        </Button>
+        <Button href={telLink()} variant="secondary" icon="phone">{t.cta.call}</Button>
+        <Button href={SOCIAL.instagram} variant="secondary" icon="instagram" external newTabLabel={t.a11y.opensInNewTab}>
+          Instagram
+        </Button>
+      </div>
+    </div>
+
+    <div class="bg-circuit relative min-h-80 overflow-hidden rounded-xl border border-white/10" data-map data-map-src={mapEmbedUrl()} data-map-title={t.contact.mapTitle} data-reveal>
+      <div class="absolute inset-0 grid place-items-center p-8 text-center" data-map-placeholder>
+        <div class="flex flex-col items-center gap-4">
+          <span class="grid size-16 place-items-center rounded-full bg-purple shadow-glow-purple">
+            <Icon name="pin" class="size-8 text-white" />
+          </span>
+          <button type="button" class="rounded-pill border border-white/25 bg-white/5 px-5 py-3 font-semibold text-white hover:border-violet" data-map-load>
+            {t.contact.mapLoad}
+          </button>
+          <p class="max-w-xs text-sm text-ink-muted">{t.contact.mapNotice}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<script>
+  // Click-to-load map: inject the Google Maps iframe only on request.
+  const map = document.querySelector<HTMLElement>('[data-map]');
+  map?.querySelector('[data-map-load]')?.addEventListener('click', () => {
+    const iframe = document.createElement('iframe');
+    iframe.src = map.dataset.mapSrc ?? '';
+    iframe.title = map.dataset.mapTitle ?? '';
+    iframe.loading = 'lazy';
+    iframe.referrerPolicy = 'no-referrer-when-downgrade';
+    iframe.className = 'absolute inset-0 size-full border-0';
+    map.querySelector('[data-map-placeholder]')?.remove();
+    map.appendChild(iframe);
+    iframe.focus();
+  });
+</script>

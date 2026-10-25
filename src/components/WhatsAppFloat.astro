@@ -1,0 +1,20 @@
+---
+// Floating WhatsApp button, fixed bottom inline-end (mirrors in RTL), pre-filled in the active language.
+import Icon from './Icon.astro';
+import { type Locale, getDictionary } from '@/i18n';
+import { whatsappLink } from '@/data/site';
+
+interface Props {
+  locale: Locale;
+}
+const t = getDictionary(Astro.props.locale);
+---
+
+<a
+  href={whatsappLink(t.whatsapp.general)}
+  target="_blank"
+  rel="noopener"
+  class="fixed end-4 bottom-4 z-40 inline-flex size-14 items-center justify-center rounded-full bg-[#25D366] text-[#0b1f12] shadow-[0_8px_24px_-4px_rgb(0_0_0/0.5)] transition-transform duration-200 ease-brand hover:scale-105 sm:end-6 sm:bottom-6"
+>
+  <Icon name="whatsapp" class="size-7" label={`${t.a11y.whatsappFloat} ${t.a11y.opensInNewTab}`} />
+</a>

@@ -1,0 +1,84 @@
+---
+// FAQ accordion (button[aria-expanded] + region). Answers are visible without JS; JS collapses them.
+// Content comes from src/data/faq.{locale}.json, shared with the chatbot.
+import Section from './Section.astro';
+import Button from './Button.astro';
+import { type Locale, getDictionary } from '@/i18n';
+import { getFaq } from '@/data/faq';
+import { whatsappLink } from '@/data/site';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const entries = getFaq(locale);
+---
+
+<Section id="faq" eyebrow={t.faq.eyebrow} title={t.faq.title} intro={t.faq.intro} tone="deep">
+  <div class="mt-12 max-w-3xl divide-y divide-white/10 border-y border-white/10" data-faq data-reveal>
+    {
+      entries.map((entry) => (
+        <div>
+          <h3>
+            <button
+              type="button"
+              id={`faq-q-${entry.id}`}
+              aria-expanded="true"
+              aria-controls={`faq-a-${entry.id}`}
+              class="faq__q flex w-full items-center justify-between gap-6 py-5 text-start text-lg font-semibold text-white hover:text-violet"
+              data-faq-q
+            >
+              {entry.q}
+              <span class="faq__icon relative size-4 shrink-0" aria-hidden="true" />
+            </button>
+          </h3>
+          <div id={`faq-a-${entry.id}`} role="region" aria-labelledby={`faq-q-${entry.id}`} class="pb-6 text-ink-muted" data-faq-a>
+            {entry.a}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+  <Fragment slot="cta">
+    <Button href={whatsappLink(t.whatsapp.general)} icon="whatsapp" external newTabLabel={t.a11y.opensInNewTab}>
+      {t.faq.cta}
+    </Button>
+  </Fragment>
+</Section>
+
+<style>
+  /* Plus / minus icon built from two bars (rotation = transform only). */
+  .faq__icon::before,
+  .faq__icon::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    top: 50%;
+    width: 100%;
+    height: 2px;
+    margin-top: -1px;
+    background: var(--color-violet);
+    transition: transform 0.3s var(--ease-brand);
+  }
+  .faq__icon::after {
+    transform: rotate(90deg);
+  }
+  [aria-expanded='true'] > .faq__icon::after {
+    transform: rotate(0deg);
+  }
+</style>
+
+<script>
+  // Collapse all answers once JS runs, then toggle on click (Enter/Space work natively on <button>).
+  document.querySelectorAll<HTMLButtonElement>('[data-faq-q]').forEach((button) => {
+    const panel = document.getElementById(button.getAttribute('aria-controls') ?? '');
+    if (!panel) return;
+    const set = (open: boolean) => {
+      button.setAttribute('aria-expanded', String(open));
+      panel.hidden = !open;
+    };
+    set(false);
+    button.addEventListener('click', () => set(button.getAttribute('aria-expanded') !== 'true'));
+  });
+</script>

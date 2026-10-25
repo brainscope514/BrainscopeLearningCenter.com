@@ -1,0 +1,292 @@
+---
+// Home hero: neural-network canvas converging into the official emblem's brain, "Think • Create • Lead", rotating subline, CTAs, scroll cue.
+import Button from './Button.astro';
+import { Image } from 'astro:assets';
+import emblem from '@/assets/brand/emblem.png';
+import { type Locale, getDictionary, trialHref } from '@/i18n';
+import { whatsappLink } from '@/data/site';
+
+interface Props {
+  locale: Locale;
+  /** id of the section the scroll cue points to. */
+  nextId: string;
+}
+const { locale, nextId } = Astro.props;
+const t = getDictionary(locale);
+const titleWords = t.hero.title.split('•').map((w) => w.trim());
+const [firstWord, ...otherWords] = t.hero.rotatorWords;
+---
+
+<section
+  id="top"
+  class="hero bg-circuit relative isolate flex min-h-[calc(100svh-4rem)] items-center overflow-hidden lg:min-h-[calc(100svh-5rem)]"
+  data-hero
+>
+  <div class="hero__glow pointer-events-none absolute inset-0 -z-10" aria-hidden="true"></div>
+  <canvas class="hero__canvas pointer-events-none absolute inset-0 -z-10 size-full" data-hero-canvas aria-hidden="true"
+  ></canvas>
+
+  <div class="container-brand relative grid items-center gap-6 py-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12 lg:py-24">
+    <div class="max-w-2xl">
+      <p class="hero-in text-sm font-semibold tracking-[0.18em] text-violet uppercase" style="--i:0">
+        {t.hero.eyebrow}
+      </p>
+
+      <h1 class="text-display mt-5 font-bold">
+        <span class="sr-only">{t.hero.title}</span>
+        <span aria-hidden="true">
+        {
+          titleWords.map((word, i) => (
+            <>
+              <span class="hero-mask">
+                <span class="hero-word glow-text" style={`--i:${i + 1}`}>
+                  {word}
+                </span>
+              </span>
+              {i < titleWords.length - 1 && (
+                <span class="hero-in text-electric" style={`--i:${i + 1}`} aria-hidden="true">
+                  {' • '}
+                </span>
+              )}
+            </>
+          ))
+        }
+        </span>
+      </h1>
+
+      <p class="hero-in mt-6 text-xl font-medium text-ink-muted lg:text-2xl" style="--i:4">
+        <span aria-hidden="true">{t.hero.rotatorPrefix}</span>
+        <span class="hero-rotator mt-1 font-bold text-white" aria-hidden="true" data-rotator>
+          <span data-rotator-word>{firstWord}</span>
+          {otherWords.map((word) => <span data-rotator-word class="hero-rotator__idle">{word}</span>)}
+        </span>
+        <span class="sr-only">{t.hero.rotatorPrefix} {t.hero.rotatorWords.join(', ')}</span>
+      </p>
+
+      <p class="hero-in mt-6 max-w-xl text-base text-ink-muted lg:text-lg" style="--i:5">{t.hero.lead}</p>
+
+      <div class="hero-in mt-9 flex flex-wrap gap-4" style="--i:6">
+        <Button href={trialHref(Astro.props.locale)} arrow magnetic>
+          {t.cta.bookTrial}
+        </Button>
+        <Button
+          href={whatsappLink(t.whatsapp.general)}
+          variant="secondary"
+          icon="whatsapp"
+          external
+          newTabLabel={t.a11y.opensInNewTab}
+        >
+          {t.cta.whatsapp}
+        </Button>
+      </div>
+    </div>
+
+    <!-- Emblem: decorative (the brand name is in the header). Its internal geometry is physical,
+         so this block is dir="ltr"; only its column position mirrors in RTL. -->
+    <div class="hero__emblem hero-in relative max-lg:order-first" style="--i:2" dir="ltr" aria-hidden="true">
+      <div class="hero__emblem-glow absolute -inset-[18%] -z-10"></div>
+      <Image
+        src={emblem}
+        alt=""
+        widths={[128, 256, 384, 512, 640, emblem.width]}
+        sizes="(min-width: 1024px) min(36vw, 32rem), 7.5rem"
+        quality={75}
+        loading="eager"
+        fetchpriority="high"
+        class="block h-auto w-full"
+      />
+      <!-- Purple brain region of the emblem: the canvas converges nodes toward it. -->
+      <span data-brain-anchor class="absolute start-[50%] top-[14%] h-[48%] w-[40%]"></span>
+    </div>
+  </div>
+
+  <a
+    href={`#${nextId}`}
+    class="hero-in absolute inset-x-0 bottom-6 mx-auto hidden w-fit flex-col items-center gap-2 text-xs font-medium tracking-wide text-ink-muted hover:text-white md:flex"
+    style="--i:7"
+  >
+    <span class="flex h-9 w-6 justify-center rounded-full border border-white/30 pt-2" aria-hidden="true">
+      <span class="hero-scroll-dot size-1.5 rounded-full bg-violet"></span>
+    </span>
+    {t.hero.scroll}
+  </a>
+</section>
+
+<style>
+  /* Purple radial glow behind the brain; mirrors to the inline-start side in RTL. */
+  .hero {
+    --glow-x: 74%;
+  }
+  :global([dir='rtl']) .hero {
+    --glow-x: 26%;
+  }
+  .hero__glow {
+    background:
+      radial-gradient(ellipse 38% 46% at var(--glow-x) 42%, rgb(106 44 255 / 0.32), transparent 70%),
+      radial-gradient(ellipse 22% 26% at var(--glow-x) 38%, rgb(161 102 255 / 0.22), transparent 70%);
+  }
+  .hero__canvas {
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+  .hero__canvas.is-ready {
+    opacity: 1;
+  }
+  @media (max-width: 1023px) {
+    .hero__canvas.is-ready {
+      opacity: 0.75;
+    }
+  }
+  .hero__emblem {
+    width: 7.5rem;
+  }
+  @media (min-width: 1024px) {
+    .hero__emblem {
+      width: min(36vw, 32rem);
+      justify-self: end;
+    }
+  }
+  /* Soft backdrop so the dark face and ring read on navy (behind the logo, not an effect on it). */
+  .hero__emblem-glow {
+    background:
+      radial-gradient(circle at 66% 38%, rgb(161 102 255 / 0.38), transparent 42%),
+      radial-gradient(circle at 46% 52%, rgb(185 195 214 / 0.16), transparent 58%);
+  }
+  .hero-mask {
+    display: inline-block;
+    /* Clip only the bottom edge (words rise from below) so the glow is never boxed in.
+       Bottom padding leaves room for descenders and Arabic diacritics. */
+    clip-path: inset(-1em -1em 0 -1em);
+    padding-block-end: 0.14em;
+    margin-block-end: -0.14em;
+    vertical-align: bottom;
+  }
+  .hero-word {
+    display: inline-block;
+  }
+  .hero-rotator {
+    display: grid;
+    width: fit-content;
+  }
+  .hero-rotator > [data-rotator-word] {
+    grid-area: 1 / 1;
+  }
+  .hero-rotator__idle {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-in {
+      animation: hero-in 0.9s var(--ease-brand) both;
+      animation-delay: calc(var(--i, 0) * 90ms + 100ms);
+    }
+    /* Word-by-word headline reveal on tablet/desktop only: on phones the headline (the LCP element) paints at once. */
+    @media (min-width: 768px) {
+      .hero-word {
+        animation: hero-word 1s var(--ease-brand) both;
+        animation-delay: calc(var(--i, 0) * 110ms + 120ms);
+      }
+    }
+    :global(html.bs-preload) .hero-in {
+      animation-delay: calc(var(--i, 0) * 90ms + 1000ms);
+    }
+    :global(html.bs-preload) .hero-word {
+      animation-delay: calc(var(--i, 0) * 110ms + 1000ms);
+    }
+    .hero-scroll-dot {
+      animation: hero-scroll 1.8s ease-in-out 2.2s infinite;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-in,
+    .hero-word {
+      animation: hero-fade 0.4s ease both;
+    }
+  }
+  @keyframes hero-in {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+  @keyframes hero-word {
+    from {
+      transform: translateY(110%);
+    }
+  }
+  @keyframes hero-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes hero-scroll {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    70% {
+      transform: translateY(12px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  import { createNeuralCanvas } from '@/lib/neural-canvas';
+  import { gsap, initMotion, prefersReducedMotion, registerMotion } from '@/lib/motion';
+
+  registerMotion();
+  // Scroll reveals are wired once the main thread is idle (they only affect content below the fold).
+  const startMotion = () => initMotion();
+  if ('requestIdleCallback' in window) requestIdleCallback(startMotion, { timeout: 1200 });
+  else setTimeout(startMotion, 300);
+
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const canvas = hero?.querySelector<HTMLCanvasElement>('[data-hero-canvas]');
+  const reduced = prefersReducedMotion();
+  const preloading = document.documentElement.classList.contains('bs-preload');
+
+  // Start the canvas once the page has loaded and the main thread is idle (protects LCP / TBT).
+  if (hero && canvas) {
+    const boot = () => {
+      const net = createNeuralCanvas(canvas, {
+        anchor: hero.querySelector('[data-brain-anchor]'),
+        pointerTarget: hero,
+        staticFrame: reduced,
+      });
+      canvas.classList.add('is-ready');
+      window.addEventListener('pagehide', () => net.destroy(), { once: true });
+    };
+    const idle = () =>
+      'requestIdleCallback' in window ? requestIdleCallback(boot, { timeout: 1500 }) : setTimeout(boot, 200);
+    if (document.readyState === 'complete') idle();
+    else window.addEventListener('load', idle, { once: true });
+  }
+
+  // Rotating subline: one pass through the words, ending on the last (stops within ~5 s, WCAG 2.2.2).
+  const words = gsap.utils.toArray<HTMLElement>('[data-rotator-word]');
+  if (words.length > 1) {
+    words.forEach((w) => w.classList.remove('hero-rotator__idle'));
+    gsap.set(words.slice(1), { autoAlpha: 0 });
+    const tl = gsap.timeline({ delay: preloading ? 2.2 : 1.4 });
+    words.slice(1).forEach((next, i) => {
+      const current = words[i]!;
+      const at = i * 1.25;
+      if (reduced) {
+        tl.to(current, { autoAlpha: 0, duration: 0.3 }, at).to(next, { autoAlpha: 1, duration: 0.3 }, at + 0.15);
+      } else {
+        tl.to(current, { yPercent: -60, autoAlpha: 0, duration: 0.45, ease: 'power2.in' }, at).fromTo(
+          next,
+          { yPercent: 60, autoAlpha: 0 },
+          { yPercent: 0, autoAlpha: 1, duration: 0.6, ease: 'power3.out' },
+          at + 0.3,
+        );
+      }
+    });
+    window.addEventListener('pagehide', () => tl.kill(), { once: true });
+  }
+</script>

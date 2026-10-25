@@ -1,0 +1,16 @@
+---
+// Inline <head> script: enables the preloader on the first visit only, on desktop-size screens only
+// (phones on slow networks go straight to the content), never under reduced motion or without JS.
+---
+
+<script is:inline>
+  try {
+    if (
+      matchMedia('(min-width: 1024px) and (prefers-reduced-motion: no-preference)').matches &&
+      !localStorage.getItem('bs-visited')
+    ) {
+      document.documentElement.classList.add('bs-preload');
+      localStorage.setItem('bs-visited', '1');
+    }
+  } catch (e) {}
+</script>

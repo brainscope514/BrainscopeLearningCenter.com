@@ -1,0 +1,42 @@
+---
+// Brand lockup for dark backgrounds: official emblem + white "BRAINSCOPE / LEARNING CENTER" wordmark
+// (as on the official dark banner). The emblem image is never stretched, recolored or given effects.
+import { Image } from 'astro:assets';
+import emblem from '@/assets/brand/emblem.png';
+import BrandA from './BrandA.astro';
+
+interface Props {
+  class?: string;
+  /** Hide the wordmark (emblem-only usage). */
+  markOnly?: boolean;
+  /** Emblem height in px. */
+  size?: number;
+}
+const { class: className = '', markOnly = false, size = 44 } = Astro.props;
+const width = Math.round((size * emblem.width) / emblem.height);
+---
+
+<span class:list={['inline-flex items-center gap-3', className]} dir="ltr">
+  <Image
+    src={emblem}
+    alt=""
+    width={width}
+    height={size}
+    densities={[1, 2]}
+    loading="eager"
+    class="shrink-0"
+    style={`width:${width}px;height:${size}px`}
+  />
+  {
+    !markOnly && (
+      <span class="flex flex-col leading-none" aria-hidden="true">
+        <span class="font-[Montserrat,'Montserrat_Fallback',sans-serif] text-lg font-bold tracking-[0.06em] text-white">
+          BR<BrandA />INSCOPE
+        </span>
+        <span class="mt-1 font-[Montserrat,'Montserrat_Fallback',sans-serif] text-[0.6rem] font-semibold tracking-[0.36em] text-violet">
+          LEARNING CENTER
+        </span>
+      </span>
+    )
+  }
+</span>

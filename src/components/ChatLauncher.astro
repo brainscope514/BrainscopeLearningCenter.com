@@ -1,0 +1,79 @@
+---
+// Floating chat launcher (stacked above the WhatsApp button at the inline-end edge). Only this button ships with
+// the page; the assistant UI, matcher and FAQ data are downloaded on first click (lazy chunk).
+import { type Locale, getDictionary } from '@/i18n';
+import { CHAT, CONTACT } from '@/data/site';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const config = JSON.stringify({
+  locale,
+  whatsappNumber: CONTACT.whatsappNumber,
+  workerUrl: CHAT.workerUrl,
+  strings: { ...t.chat, opensInNewTab: t.a11y.opensInNewTab },
+});
+---
+
+<button
+  type="button"
+  class="chat-launcher fixed end-5 bottom-[5.25rem] z-40 grid size-12 place-items-center rounded-full border border-violet/50 bg-navy-800 text-white shadow-glow-purple transition-transform duration-200 ease-brand hover:scale-105 sm:end-7 sm:bottom-24"
+  aria-label={t.chat.open}
+  aria-expanded="false"
+  aria-controls="brainscope-chat"
+  data-chat-launcher
+  data-config={config}
+>
+  <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.6A8 8 0 1 1 21 12Z"></path>
+    <path d="M9 11h.01M12 11h.01M15 11h.01" stroke-width="2.4"></path>
+  </svg>
+</button>
+
+<style is:global>
+  @media (prefers-reduced-motion: no-preference) {
+    .chat-typing > span {
+      animation: chat-dot 1s ease-in-out infinite;
+    }
+    .chat-typing > span:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+    .chat-typing > span:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+  }
+  @keyframes chat-dot {
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translateY(-3px);
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  // Lazy-load the assistant on first click; later clicks just toggle it.
+  const launcher = document.querySelector<HTMLButtonElement>('[data-chat-launcher]');
+  let chat: { toggle: () => void } | null = null;
+  let loading = false;
+  launcher?.addEventListener('click', async () => {
+    if (chat) return chat.toggle();
+    if (loading) return;
+    loading = true;
+    launcher.setAttribute('aria-busy', 'true');
+    try {
+      const { createChat } = await import('@/lib/chat/widget');
+      chat = await createChat({ ...JSON.parse(launcher.dataset.config ?? '{}'), launcher });
+      chat.toggle();
+    } finally {
+      loading = false;
+      launcher.removeAttribute('aria-busy');
+    }
+  });
+</script>

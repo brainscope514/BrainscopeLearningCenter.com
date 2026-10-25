@@ -1,0 +1,43 @@
+---
+// Page section shell: anchor id, eyebrow + heading + intro (revealed on scroll), content slot and a closing CTA slot.
+interface Props {
+  id: string;
+  eyebrow: string;
+  title: string;
+  intro?: string;
+  /** Background treatment: plain navy, deeper navy, or the circuit-board brand pattern. */
+  tone?: 'navy' | 'deep' | 'circuit';
+  /** Center the heading block (default: start-aligned). */
+  center?: boolean;
+  class?: string;
+}
+const { id, eyebrow, title, intro, tone = 'navy', center = false, class: className } = Astro.props;
+---
+
+<section
+  id={id}
+  aria-labelledby={`${id}-title`}
+  class:list={[
+    'relative py-section',
+    tone === 'deep' && 'bg-navy-900',
+    tone === 'circuit' && 'bg-circuit',
+    tone === 'navy' && 'bg-navy',
+    className,
+  ]}
+>
+  <div class="container-brand">
+    <header class:list={['max-w-3xl', center && 'mx-auto text-center']}>
+      <p class="text-sm font-semibold tracking-[0.18em] text-violet uppercase" data-reveal>{eyebrow}</p>
+      <h2 id={`${id}-title`} class="mt-4 text-3xl font-bold text-white lg:text-4xl" data-reveal="lines">{title}</h2>
+      {intro && <p class="mt-5 text-lg text-ink-muted" data-reveal data-reveal-delay="0.1">{intro}</p>}
+    </header>
+    <slot />
+    {
+      Astro.slots.has('cta') && (
+        <div class:list={['mt-12 flex flex-wrap gap-4', center && 'justify-center']} data-reveal>
+          <slot name="cta" />
+        </div>
+      )
+    }
+  </div>
+</section>

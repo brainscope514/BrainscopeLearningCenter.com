@@ -1,0 +1,45 @@
+---
+// Progression insignia per track: hexagon badges (Robo Kids), chevron ranks (Falcon Track), milestone nodes (AI & Python).
+// Each level shows one more mark than the last; [data-insignia] items animate in when the section is reached.
+interface Props {
+  kind: 'badge' | 'rank' | 'milestone';
+  levels: string[];
+}
+const { kind, levels } = Astro.props;
+---
+
+<ol class="flex flex-wrap gap-3" data-insignia>
+  {
+    levels.map((level, i) => (
+      <li class="flex flex-col items-center gap-2 text-center" data-insignia-item>
+        <svg class="h-12 w-12" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          {kind === 'badge' && (
+            <>
+              <path d="M24 3 42 13.5v21L24 45 6 34.5v-21L24 3Z" fill="rgb(106 44 255 / 0.18)" stroke="#A166FF" stroke-width="2" />
+              {Array.from({ length: i + 1 }, (_, s) => (
+                <path d={`M${24 - i * 5 + s * 10} 19l2 4.2 4.6.6-3.4 3.2.9 4.6-4.1-2.3-4.1 2.3.9-4.6-3.4-3.2 4.6-.6 2-4.2Z`} fill="#00B8FF" />
+              ))}
+            </>
+          )}
+          {kind === 'rank' && (
+            <>
+              <rect x="5" y="3" width="38" height="42" rx="8" fill="rgb(106 44 255 / 0.18)" stroke="#A166FF" stroke-width="2" />
+              {Array.from({ length: i + 1 }, (_, s) => (
+                <path d={`M13 ${33 - s * 7}l11-7 11 7`} stroke={i === levels.length - 1 ? '#FF4D9D' : '#00B8FF'} stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+              ))}
+            </>
+          )}
+          {kind === 'milestone' && (
+            <>
+              <circle cx="24" cy="24" r="20" fill="rgb(106 44 255 / 0.18)" stroke="#A166FF" stroke-width="2" />
+              {Array.from({ length: i + 1 }, (_, s) => (
+                <circle cx={24 - i * 6 + s * 12} cy="24" r="4" fill="#00B8FF" />
+              ))}
+            </>
+          )}
+        </svg>
+        <span class="text-xs font-semibold text-ink-muted">{level}</span>
+      </li>
+    ))
+  }
+</ol>

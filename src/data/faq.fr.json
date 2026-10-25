@@ -1,0 +1,140 @@
+[
+  {
+    "id": "ages",
+    "q": "À partir de quel âge accueillez-vous les élèves ?",
+    "a": "Robo Kids s’adresse aux 8–12 ans et le Falcon Track aux 11–15 ans. Le soutien scolaire est destiné aux élèves, et nous accompagnons aussi les étudiants universitaires (AI & Python, mécatronique, droit, journalisme, marketing et plus encore).",
+    "keywords": ["âge", "age", "ans", "quel âge", "quel age", "enfant", "enfants", "ado", "adolescent", "université"]
+  },
+  {
+    "id": "programs",
+    "q": "Quels programmes proposez-vous ?",
+    "a": "Le Soutien scolaire (matières scolaires, agenda et suivi des devoirs), les Compétences du futur (Robo Kids, Falcon Track, AI & Python), l’Accompagnement universitaire et le Développement (communication et leadership). Les échecs arrivent bientôt.",
+    "keywords": ["programme", "programmes", "cours", "formation", "formations", "activités", "activites", "proposez", "offre"]
+  },
+  {
+    "id": "location",
+    "q": "Où se trouve Brainscope ?",
+    "a": "Sur la route principale (autoroute Tripoli–Zgharta), à Zgharta, au Liban-Nord. Écrivez-nous sur WhatsApp et nous vous enverrons la localisation exacte.",
+    "keywords": ["où", "ou", "adresse", "localisation", "carte", "plan", "zgharta", "itinéraire", "itineraire", "trouver"]
+  },
+  {
+    "id": "trial",
+    "q": "Comment réserver une séance d’essai gratuite ?",
+    "a": "Appuyez sur « Essai gratuit » ou écrivez-nous sur WhatsApp en indiquant l’âge de votre enfant et le programme qui vous intéresse. Nous vous proposerons un créneau qui vous convient.",
+    "keywords": ["essai", "gratuit", "gratuite", "réserver", "reserver", "réservation", "reservation", "inscription", "inscrire", "première séance"]
+  },
+  {
+    "id": "schedule",
+    "q": "Quels sont les horaires des cours ?",
+    "a": "Les horaires dépendent du programme et du groupe. Demandez-nous sur WhatsApp le planning actuel et les places disponibles.",
+    "keywords": ["horaire", "horaires", "heure", "heures", "planning", "emploi du temps", "quand", "jours", "créneau", "creneau"]
+  },
+  {
+    "id": "fees",
+    "q": "Combien coûtent les programmes ?",
+    "a": "Nous communiquons les tarifs actuels directement sur WhatsApp, pour que vous ayez toujours des informations à jour sur le programme choisi.",
+    "keywords": ["prix", "tarif", "tarifs", "coût", "cout", "combien", "frais", "paiement", "payer"]
+  },
+  {
+    "id": "parents",
+    "q": "Comment saurai-je si mon enfant progresse ?",
+    "a": "Le soutien scolaire et le suivi de l’agenda incluent un bilan hebdomadaire pour les parents : un point clair sur les progrès et les prochaines étapes. En Compétences du futur, les élèves montrent leurs progrès à travers des badges, des grades et des projets.",
+    "keywords": ["progrès", "progres", "progresse", "suivi", "bilan", "parents", "résultats", "resultats", "nouvelles", "compte rendu"]
+  },
+  {
+    "id": "demo-day",
+    "q": "Qu’est-ce que le Demo Day ?",
+    "a": "Le Demo Day est notre événement de présentation : les élèves y présentent les projets qu’ils ont réalisés à leurs familles et aux invités.",
+    "keywords": ["demo", "demo day", "démo", "présentation", "presentation", "événement", "evenement", "projets", "spectacle"]
+  },
+  {
+    "id": "falcon-ranks",
+    "q": "Comment fonctionne le système de grades du Falcon Track ?",
+    "a": "Les élèves du Falcon Track (11–15 ans) obtiennent des grades à mesure qu’ils maîtrisent de nouvelles compétences en robotique et en Python. Chaque grade marque un progrès réel et démontré.",
+    "keywords": ["falcon", "grade", "grades", "rang", "insigne", "insignes", "niveau", "niveaux"]
+  },
+  {
+    "id": "university",
+    "q": "Accompagnez-vous les étudiants universitaires ?",
+    "a": "Oui. Nous proposons des cours particuliers et un accompagnement de projets en mécatronique (mécanique, électricité, électronique, informatique), AI & Python, droit, journalisme, marketing et plus encore. Indiquez-nous votre filière et votre cours sur WhatsApp.",
+    "keywords": ["université", "universite", "fac", "étudiant", "etudiant", "mécatronique", "mecatronique", "droit", "journalisme", "marketing", "ingénierie"]
+  },
+  {
+    "id": "chess",
+    "q": "Proposez-vous des cours d’échecs ?",
+    "a": "Les échecs arrivent bientôt. Écrivez-nous sur WhatsApp si vous souhaitez être prévenu(e) du lancement.",
+    "keywords": ["échecs", "echecs", "échec", "echec", "jeu de société", "jeu de societe", "chess"]
+  },
+  {
+    "id": "bring",
+    "q": "Que doit apporter mon enfant ?",
+    "a": "Nous vous indiquerons précisément ce qu’il faut lors de la réservation. N’hésitez pas à nous écrire sur WhatsApp si vous avez des questions avant la première séance.",
+    "keywords": ["apporter", "matériel", "materiel", "ordinateur", "pc", "fournitures", "besoin", "équipement", "equipement"],
+    "status": "TODO_CONFIRM"
+  },
+  {
+    "id": "workshops",
+    "q": "Proposez-vous des ateliers ?",
+    "a": "Oui. Nous organisons des ateliers de leadership, de prise de parole en public, de communication, de journalisme et médias, de robotique et d’IA, ainsi que de méthodologie. Nous pouvons aussi concevoir des ateliers sur mesure pour les écoles et les organisations. Demandez-nous les prochaines dates sur WhatsApp.",
+    "keywords": ["atelier", "ateliers", "leadership", "prise de parole", "journalisme", "communication", "médias", "medias", "formation", "stage"]
+  },
+  {
+    "id": "partnerships",
+    "q": "Mon école ou mon organisation peut-elle collaborer avec Brainscope ?",
+    "a": "Oui. Nous collaborons avec des académies, des écoles, des universités et des organisations : ateliers, programmes de robotique et d’IA, événements et soutien scolaire. Écrivez-nous sur WhatsApp pour discuter d’une collaboration.",
+    "keywords": ["partenaire", "partenariat", "collaborer", "collaboration", "école", "ecole", "établissement", "etablissement", "institution", "académie"]
+  },
+  {
+    "id": "agenda",
+    "q": "En quoi consiste le suivi de l’agenda ?",
+    "a": "Le suivi de l’agenda apprend aux élèves à planifier leur semaine, à tenir leur agenda scolaire à jour et à faire leurs devoirs avec méthode. Les parents reçoivent un bilan hebdomadaire des progrès et des prochaines étapes.",
+    "keywords": ["agenda", "devoirs", "organisation", "organiser", "planning", "planifier", "méthode", "methode", "suivi", "révisions"]
+  },
+  {
+    "id": "experience",
+    "q": "Mon enfant doit-il avoir déjà fait de la robotique ou du code ?",
+    "a": "Non. Robo Kids est conçu comme une première approche de la robotique. Lors de la séance d’essai gratuite, nous évaluons le niveau de chaque élève et lui recommandons le programme adapté.",
+    "keywords": ["expérience", "experience", "débutant", "debutant", "débutants", "jamais", "première fois", "premiere fois", "niveau", "prérequis"]
+  },
+  {
+    "id": "languages",
+    "q": "Dans quelle langue les cours sont-ils donnés ?",
+    "a": "Notre équipe parle arabe, anglais et français. Demandez-nous sur WhatsApp quelle langue est utilisée dans le groupe qui vous intéresse.",
+    "keywords": ["langue", "langues", "anglais", "français", "francais", "arabe", "en quelle langue", "enseigné", "enseigne"],
+    "status": "TODO_CONFIRM"
+  },
+  {
+    "id": "safety",
+    "q": "Le centre est-il un environnement sûr pour les enfants ?",
+    "a": "Le bien-être de chaque élève passe avant tout. Pour en savoir plus sur l’encadrement et nos locaux, contactez l’équipe sur WhatsApp ou venez visiter le centre.",
+    "keywords": ["sécurité", "securite", "sûr", "encadrement", "surveillance", "enfants", "environnement", "locaux"],
+    "status": "TODO_CONFIRM"
+  },
+  {
+    "id": "group-size",
+    "q": "Combien d’élèves y a-t-il par groupe ?",
+    "a": "La taille des groupes dépend du programme. Demandez-nous sur WhatsApp les détails du groupe qui vous intéresse.",
+    "keywords": ["groupe", "groupes", "taille", "combien d’élèves", "combien d'eleves", "effectif", "par classe", "nombre d’élèves", "nombre d'eleves"],
+    "status": "TODO_CONFIRM"
+  },
+  {
+    "id": "duration",
+    "q": "Combien de temps dure chaque séance ?",
+    "a": "La durée des séances dépend du programme. Écrivez-nous sur WhatsApp et nous vous donnerons les détails du programme qui vous intéresse.",
+    "keywords": ["durée", "duree", "dure", "combien de temps", "minutes", "heure", "heures", "séance", "seance"],
+    "status": "TODO_CONFIRM"
+  },
+  {
+    "id": "certificate",
+    "q": "Les élèves reçoivent-ils un certificat ?",
+    "a": "Renseignez-vous auprès de l’équipe sur WhatsApp au sujet des certificats pour le programme qui vous intéresse.",
+    "keywords": ["certificat", "certificats", "attestation", "diplôme", "diplome", "certification", "récompense", "recompense"],
+    "status": "TODO_CONFIRM"
+  },
+  {
+    "id": "contact",
+    "q": "Comment contacter Brainscope ?",
+    "a": "Le plus rapide est WhatsApp. Vous pouvez aussi nous appeler ou nous suivre sur Instagram @brainscopecenter.",
+    "keywords": ["contact", "contacter", "téléphone", "telephone", "numéro", "numero", "whatsapp", "appeler", "instagram", "joindre"]
+  }
+]

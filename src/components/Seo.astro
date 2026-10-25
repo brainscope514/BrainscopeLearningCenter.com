@@ -1,0 +1,114 @@
+---
+// <head> SEO: title, description, canonical, hreflang alternates, Open Graph, Twitter, JSON-LD.
+import { LOCALES, LOCALE_TAGS, type Locale, getDictionary, localizedPath, stripLocale, withBase } from '@/i18n';
+import { CONTACT, SITE, SOCIAL, isConfirmed } from '@/data/site';
+import { getFaq } from '@/data/faq';
+
+interface Props {
+  locale: Locale;
+  title?: string;
+  description?: string;
+  /** Root-relative path (without base) of the OG image; defaults to the locale's image. */
+  ogImage?: string;
+  noindex?: boolean;
+}
+const { locale, title, description, ogImage = `/brand/og-image-${locale}.jpg`, noindex = false } = Astro.props;
+const t = getDictionary(locale);
+const site = Astro.site ?? new URL(Astro.url.origin);
+const abs = (path: string) => new URL(path, site).href;
+
+const pageTitle = title ? `${title} | ${t.meta.siteName}` : t.meta.defaultTitle;
+const pageDescription = description ?? t.meta.defaultDescription;
+const subpath = stripLocale(Astro.url.pathname);
+const canonical = abs(localizedPath(locale, subpath));
+const alternates = LOCALES.map((code) => ({ hreflang: LOCALE_TAGS[code].hreflang, href: abs(localizedPath(code, subpath)) }));
+const imageUrl = abs(withBase(ogImage));
+
+const sameAs = [SOCIAL.instagram, SOCIAL.facebook, SOCIAL.tiktok, SOCIAL.googleMaps].filter(isConfirmed);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': ['EducationalOrganization', 'LocalBusiness'],
+  '@id': `${abs(withBase('/'))}#organization`,
+  name: SITE.name,
+  alternateName: SITE.altName,
+  slogan: 'Think • Create • Lead',
+  url: abs(localizedPath(locale)),
+  logo: abs(withBase('/brand/logo-full.webp')),
+  image: imageUrl,
+  description: pageDescription,
+  telephone: CONTACT.phoneNumber,
+  ...(isConfirmed(CONTACT.email) && { email: CONTACT.email }),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: SITE.address.street,
+    addressLocality: SITE.address.locality,
+    addressRegion: SITE.address.region,
+    addressCountry: SITE.address.country,
+  },
+  ...(SITE.geo && { geo: { '@type': 'GeoCoordinates', latitude: SITE.geo.lat, longitude: SITE.geo.lng } }),
+  founder: SITE.founders.map((name) => ({ '@type': 'Person', name })),
+  areaServed: 'North Lebanon',
+  knowsLanguage: ['en', 'fr', 'ar'],
+  inLanguage: LOCALE_TAGS[locale].hreflang,
+  sameAs,
+};
+const isHome = subpath === '/';
+const graph: object[] = [jsonLd];
+if (isHome && !noindex) {
+  graph.push({
+    '@type': 'WebSite',
+    '@id': `${abs(withBase('/'))}#website`,
+    name: SITE.name,
+    url: abs(localizedPath(locale)),
+    inLanguage: LOCALE_TAGS[locale].hreflang,
+    publisher: { '@id': `${abs(withBase('/'))}#organization` },
+  });
+  graph.push({
+    '@type': 'FAQPage',
+    inLanguage: LOCALE_TAGS[locale].hreflang,
+    mainEntity: getFaq(locale)
+      .filter((f) => f.status !== 'TODO_CONFIRM')
+      .map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  });
+}
+const { '@context': _ctx, ...orgNode } = jsonLd;
+const structuredData = { '@context': 'https://schema.org', '@graph': [orgNode, ...graph.slice(1)] };
+---
+
+<title>{pageTitle}</title>
+<meta name="description" content={pageDescription} />
+{noindex && <meta name="robots" content="noindex" />}
+{
+  !noindex && (
+    <>
+      <link rel="canonical" href={canonical} />
+      {alternates.map((alt) => (
+        <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+      ))}
+      <link rel="alternate" hreflang="x-default" href={abs(localizedPath('en', subpath))} />
+    </>
+  )
+}
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={t.meta.siteName} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={pageDescription} />
+{!noindex && <meta property="og:url" content={canonical} />}
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={t.meta.ogImageAlt} />
+<meta property="og:locale" content={LOCALE_TAGS[locale].og} />
+{
+  LOCALES.filter((code) => code !== locale).map((code) => (
+    <meta property="og:locale:alternate" content={LOCALE_TAGS[code].og} />
+  ))
+}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={pageDescription} />
+<meta name="twitter:image" content={imageUrl} />
+<meta name="twitter:image:alt" content={t.meta.ogImageAlt} />
+
+{!noindex && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}

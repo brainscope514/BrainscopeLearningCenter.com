@@ -1,0 +1,213 @@
+---
+// Free-trial booking form. No backend: validates on the client, then opens WhatsApp with a pre-filled message
+// in the active language (URL-encoded, Arabic-safe). Offers Call / Instagram / direct WhatsApp alternatives.
+import Section from './Section.astro';
+import Button from './Button.astro';
+import { type Locale, getDictionary } from '@/i18n';
+import { CONTACT, SOCIAL, telLink, whatsappLink } from '@/data/site';
+
+interface Props {
+  locale: Locale;
+}
+const t = getDictionary(Astro.props.locale);
+const b = t.book;
+// Everything the script needs to compose the message, passed as data (no strings hardcoded in the script).
+const config = JSON.stringify({ number: CONTACT.whatsappNumber, message: b.message, errors: b.errors });
+const field =
+  'mt-2 block w-full rounded-lg border border-white/15 bg-navy-900/80 px-4 py-3 text-white placeholder:text-ink-muted/70 focus:border-violet focus:outline-none focus-visible:ring-2 focus-visible:ring-violet aria-[invalid=true]:border-magenta';
+const label = 'block text-sm font-semibold text-white';
+const error = 'mt-2 text-sm font-medium text-[#ff8fbf]';
+---
+
+<Section id="book" eyebrow={b.eyebrow} title={b.title} intro={b.intro} tone="circuit">
+  <div class="mt-12 grid gap-10 lg:grid-cols-[1.4fr_0.6fr]">
+    <div class="rounded-2xl border border-violet/30 bg-navy-800/90 p-6 shadow-glow-purple sm:p-8" data-reveal>
+      <noscript>
+        <p class="mb-6 rounded-lg border border-white/15 p-4 text-ink-muted">
+          {b.noscript}
+          <a href={whatsappLink(t.whatsapp.trial)} class="ms-1 font-semibold text-violet underline">{t.cta.whatsapp}</a>
+        </p>
+      </noscript>
+
+      <form novalidate data-book-form data-config={config} class="grid gap-6 sm:grid-cols-2">
+        <div class="hidden sm:col-span-2" role="alert" tabindex="-1" data-book-summary>
+          <div class="rounded-lg border border-magenta/60 bg-magenta/10 p-4">
+            <p class="font-semibold text-white">{b.errorsTitle}</p>
+            <ul class="mt-2 list-disc ps-5 text-sm text-[#ff8fbf]" data-book-summary-list></ul>
+          </div>
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="book-name" class={label}>{b.nameLabel}</label>
+          <input id="book-name" name="name" type="text" autocomplete="name" required class={field} aria-describedby="book-name-error" />
+          <p id="book-name-error" class={error} hidden data-error-for="name"></p>
+        </div>
+
+        <div>
+          <label for="book-age" class={label}>{b.ageLabel}</label>
+          <input id="book-age" name="age" type="text" inputmode="numeric" maxlength="3" required class={field} aria-describedby="book-age-error" />
+          <p id="book-age-error" class={error} hidden data-error-for="age"></p>
+        </div>
+
+        <div>
+          <label for="book-program" class={label}>{b.programLabel}</label>
+          <select id="book-program" name="program" required class={field} aria-describedby="book-program-error">
+            <option value="">{b.programPlaceholder}</option>
+            {b.programs.map((p) => <option value={p.id}>{p.label}</option>)}
+          </select>
+          <p id="book-program-error" class={error} hidden data-error-for="program"></p>
+        </div>
+
+        <fieldset>
+          <legend class={label}>{b.contactLabel}</legend>
+          <div class="mt-3 flex flex-wrap gap-3">
+            {
+              b.contactOptions.map((o, i) => (
+                <label class="flex cursor-pointer items-center gap-2 rounded-lg border border-white/15 px-4 py-2.5 text-white has-[:checked]:border-violet has-[:checked]:bg-purple/20">
+                  <input type="radio" name="contact" value={o.id} checked={i === 0} class="accent-[#6A2CFF]" />
+                  {o.label}
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <div>
+          <label for="book-time" class={label}>{b.timeLabel}</label>
+          <select id="book-time" name="time" required class={field} aria-describedby="book-time-error">
+            <option value="">{b.timePlaceholder}</option>
+            {b.times.map((o) => <option value={o.id}>{o.label}</option>)}
+          </select>
+          <p id="book-time-error" class={error} hidden data-error-for="time"></p>
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="book-message" class={label}>
+            {b.messageLabel}
+          </label>
+          <textarea id="book-message" name="message" rows="3" maxlength="500" class={field}></textarea>
+        </div>
+
+        <div class="sm:col-span-2">
+          <button
+            type="submit"
+            class="inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-pill bg-purple px-6 py-2.5 font-semibold text-white shadow-glow-purple transition-colors hover:bg-purple-400 sm:w-auto"
+          >
+            {b.submit}
+          </button>
+        </div>
+      </form>
+
+      <div class="hidden" role="status" tabindex="-1" data-book-success>
+        <p class="text-2xl font-bold text-white">{b.successTitle}</p>
+        <p class="mt-3 text-ink-muted">{b.successText}</p>
+        <div class="mt-6">
+          <Button href={whatsappLink(t.whatsapp.trial)} icon="whatsapp" external newTabLabel={t.a11y.opensInNewTab} data-book-retry>
+            {b.successRetry}
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="space-y-4" data-reveal>
+      <p class="text-lg font-semibold text-white">{b.alternatives}</p>
+      <div class="flex flex-col gap-3">
+        <Button href={telLink()} variant="secondary" icon="phone">{t.cta.call}</Button>
+        <Button href={whatsappLink(t.whatsapp.trial)} variant="secondary" icon="whatsapp" external newTabLabel={t.a11y.opensInNewTab}>
+          {t.cta.whatsapp}
+        </Button>
+        <Button href={SOCIAL.instagram} variant="secondary" icon="instagram" external newTabLabel={t.a11y.opensInNewTab}>
+          @{SOCIAL.instagramHandle}
+        </Button>
+      </div>
+    </aside>
+  </div>
+</Section>
+
+<script>
+  import { buildTrialMessage, validateTrial, type TrialConfig, type TrialValues } from '@/lib/trial-form';
+
+  const form = document.querySelector<HTMLFormElement>('[data-book-form]');
+  if (form) {
+    const config = JSON.parse(form.dataset.config ?? '{}') as TrialConfig;
+    const summary = form.querySelector<HTMLElement>('[data-book-summary]')!;
+    const summaryList = form.querySelector<HTMLElement>('[data-book-summary-list]')!;
+    const success = form.parentElement!.querySelector<HTMLElement>('[data-book-success]')!;
+    const retry = success.querySelector<HTMLAnchorElement>('[data-book-retry]');
+    let submitted = false;
+
+    const labelOf = (name: string) => {
+      const el = form.elements.namedItem(name);
+      if (el instanceof HTMLSelectElement) return el.selectedOptions[0]?.textContent?.trim() ?? '';
+      if (el instanceof RadioNodeList) {
+        const checked = Array.from(el).find((r) => (r as HTMLInputElement).checked);
+        return checked?.parentElement?.textContent?.trim() ?? '';
+      }
+      return '';
+    };
+    const read = (): TrialValues => {
+      const data = new FormData(form);
+      return {
+        name: String(data.get('name') ?? ''),
+        age: String(data.get('age') ?? ''),
+        program: String(data.get('program') ?? ''),
+        time: String(data.get('time') ?? ''),
+        message: String(data.get('message') ?? ''),
+        programLabel: labelOf('program'),
+        contactLabel: labelOf('contact'),
+        timeLabel: labelOf('time'),
+      };
+    };
+
+    // Inline errors (aria-invalid + described-by text) and a focusable summary with links to each field.
+    const showErrors = (errors: Record<string, string>) => {
+      form.querySelectorAll<HTMLElement>('[data-error-for]').forEach((p) => {
+        const name = p.dataset.errorFor!;
+        const input = form.elements.namedItem(name) as HTMLElement | null;
+        const message = errors[name];
+        p.hidden = !message;
+        p.textContent = message ?? '';
+        input?.setAttribute('aria-invalid', String(Boolean(message)));
+      });
+      summaryList.replaceChildren(
+        ...Object.entries(errors).map(([name, message]) => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = `#book-${name}`;
+          a.textContent = message;
+          a.className = 'inline-flex min-h-6 items-center underline';
+          a.addEventListener('click', (e) => {
+            e.preventDefault();
+            (form.elements.namedItem(name) as HTMLElement | null)?.focus();
+          });
+          li.append(a);
+          return li;
+        }),
+      );
+      summary.classList.toggle('hidden', Object.keys(errors).length === 0);
+    };
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      submitted = true;
+      const values = read();
+      const errors = validateTrial(values, config.errors);
+      showErrors(errors);
+      if (Object.keys(errors).length) {
+        summary.focus();
+        return;
+      }
+      const url = `https://wa.me/${config.number}?text=${encodeURIComponent(buildTrialMessage(values, config.message))}`;
+      if (retry) retry.href = url;
+      window.open(url, '_blank', 'noopener');
+      form.classList.add('hidden');
+      success.classList.remove('hidden');
+      success.focus();
+    });
+
+    // After a first submit attempt, re-validate as the visitor corrects fields.
+    form.addEventListener('input', () => {
+      if (submitted) showErrors(validateTrial(read(), config.errors));
+    });
+  }
+</script>

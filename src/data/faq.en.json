@@ -1,0 +1,305 @@
+[
+  {
+    "id": "ages",
+    "q": "What ages do you teach?",
+    "a": "Robo Kids is for ages 8–12 and the Falcon Track for ages 11–15. Academic support is for school students, and we also support university students (AI & Python, mechatronics, law, journalism, marketing and more).",
+    "keywords": [
+      "age",
+      "ages",
+      "old",
+      "how old",
+      "kids",
+      "children",
+      "teen",
+      "university"
+    ]
+  },
+  {
+    "id": "programs",
+    "q": "Which programs do you offer?",
+    "a": "Academic Support (school subjects plus agenda and homework coaching), Future Skills (Robo Kids, Falcon Track, AI & Python), University Support, and Development (communication and leadership). Chess is coming soon.",
+    "keywords": [
+      "program",
+      "programs",
+      "courses",
+      "classes",
+      "offer",
+      "what do you teach"
+    ]
+  },
+  {
+    "id": "location",
+    "q": "Where is Brainscope located?",
+    "a": "On the Main Road (Tripoli–Zgharta highway), Zgharta, North Lebanon. Message us on WhatsApp and we will send you the exact location.",
+    "keywords": [
+      "where",
+      "location",
+      "address",
+      "map",
+      "zgharta",
+      "directions"
+    ]
+  },
+  {
+    "id": "trial",
+    "q": "How do I book a free trial session?",
+    "a": "Tap “Book a free trial” or message us on WhatsApp with your child’s age and the program you are interested in. We will suggest a time that suits you.",
+    "keywords": [
+      "trial",
+      "free",
+      "book",
+      "booking",
+      "try",
+      "first session",
+      "register",
+      "enroll"
+    ]
+  },
+  {
+    "id": "schedule",
+    "q": "What are the class times?",
+    "a": "Schedules depend on the program and group. Please ask us on WhatsApp for the current timetable and available places.",
+    "keywords": [
+      "schedule",
+      "time",
+      "times",
+      "timetable",
+      "when",
+      "days",
+      "hours"
+    ]
+  },
+  {
+    "id": "fees",
+    "q": "How much do the programs cost?",
+    "a": "We share current fees directly on WhatsApp so you always get up-to-date information for the program you choose.",
+    "keywords": [
+      "price",
+      "prices",
+      "cost",
+      "fee",
+      "fees",
+      "how much",
+      "payment"
+    ]
+  },
+  {
+    "id": "parents",
+    "q": "How will I know how my child is progressing?",
+    "a": "Academic and agenda coaching include a weekly parent review: a clear update on progress and next steps. Future Skills students show their progress through badges, ranks and projects.",
+    "keywords": [
+      "progress",
+      "report",
+      "parents",
+      "follow",
+      "update",
+      "review",
+      "feedback"
+    ]
+  },
+  {
+    "id": "demo-day",
+    "q": "What is Demo Day?",
+    "a": "Demo Day is our showcase event, where students present the projects they built to their families and guests.",
+    "keywords": [
+      "demo",
+      "demo day",
+      "showcase",
+      "event",
+      "presentation",
+      "projects"
+    ]
+  },
+  {
+    "id": "falcon-ranks",
+    "q": "How does the Falcon Track rank system work?",
+    "a": "Falcon Track students (ages 11–15) earn ranks as they master new skills in robotics and Python. Each rank marks real, demonstrated progress.",
+    "keywords": [
+      "falcon",
+      "rank",
+      "ranks",
+      "insignia",
+      "level",
+      "levels"
+    ]
+  },
+  {
+    "id": "university",
+    "q": "Do you support university students?",
+    "a": "Yes. We offer tutoring and project support in mechatronics (mechanical, electrical, electronics, computer science), AI & Python, law, journalism, marketing and more. Tell us your field and course on WhatsApp.",
+    "keywords": [
+      "university",
+      "college",
+      "student",
+      "mechatronics",
+      "law",
+      "journalism",
+      "marketing",
+      "engineering"
+    ]
+  },
+  {
+    "id": "chess",
+    "q": "Do you teach chess?",
+    "a": "Chess is coming soon. Message us on WhatsApp if you would like to be told when it starts.",
+    "keywords": [
+      "chess",
+      "echecs",
+      "board game"
+    ]
+  },
+  {
+    "id": "bring",
+    "q": "What does my child need to bring?",
+    "a": "We will tell you exactly what is needed when you book. Ask us on WhatsApp if you have any questions before the first session.",
+    "keywords": [
+      "bring",
+      "need",
+      "laptop",
+      "equipment",
+      "materials",
+      "kit"
+    ],
+    "status": "TODO_CONFIRM"
+  },
+  {
+    "id": "workshops",
+    "q": "Do you offer workshops?",
+    "a": "Yes. We run workshops in leadership, public speaking, communication, journalism and media, robotics and AI, and study skills. We can also organize custom workshops for schools and organizations. Ask us on WhatsApp for upcoming dates.",
+    "keywords": [
+      "workshop",
+      "workshops",
+      "leadership",
+      "public speaking",
+      "journalism",
+      "communication",
+      "media",
+      "training"
+    ]
+  },
+  {
+    "id": "partnerships",
+    "q": "Can my school or organization collaborate with Brainscope?",
+    "a": "Yes. We collaborate with academies, schools, universities and organizations on workshops, robotics and AI programs, events and academic support. Message us on WhatsApp to discuss a collaboration.",
+    "keywords": [
+      "partner",
+      "partnership",
+      "collaborate",
+      "collaboration",
+      "school",
+      "organization",
+      "institution",
+      "academy"
+    ]
+  },
+  {
+    "id": "agenda",
+    "q": "What is agenda coaching?",
+    "a": "Agenda coaching teaches students to plan their week, keep their school agenda up to date and finish homework with method. Parents receive a weekly review of progress and next steps.",
+    "keywords": [
+      "agenda",
+      "homework",
+      "organization",
+      "organize",
+      "planning",
+      "coaching",
+      "study"
+    ]
+  },
+  {
+    "id": "experience",
+    "q": "Does my child need previous experience in robotics or coding?",
+    "a": "No. Robo Kids is designed as a first step into robotics. During the free trial we get to know each student’s level and recommend the right program.",
+    "keywords": [
+      "experience",
+      "beginner",
+      "beginners",
+      "never",
+      "first time",
+      "level",
+      "prior"
+    ]
+  },
+  {
+    "id": "languages",
+    "q": "In which language are classes taught?",
+    "a": "Our team speaks Arabic, English and French. Please ask us on WhatsApp which language is used in the group you are interested in.",
+    "keywords": [
+      "language",
+      "languages",
+      "english",
+      "french",
+      "arabic",
+      "taught in"
+    ],
+    "status": "TODO_CONFIRM"
+  },
+  {
+    "id": "safety",
+    "q": "Is the center a safe environment for children?",
+    "a": "The well-being of every student comes first. For details about supervision and our facilities, please contact the team on WhatsApp or visit the center.",
+    "keywords": [
+      "safe",
+      "safety",
+      "supervision",
+      "secure",
+      "children",
+      "environment"
+    ],
+    "status": "TODO_CONFIRM"
+  },
+  {
+    "id": "group-size",
+    "q": "How many students are in a group?",
+    "a": "Group sizes depend on the program. Please ask us on WhatsApp for details about the group you are interested in.",
+    "keywords": [
+      "group",
+      "size",
+      "how many",
+      "students per",
+      "class size"
+    ],
+    "status": "TODO_CONFIRM"
+  },
+  {
+    "id": "duration",
+    "q": "How long is each session?",
+    "a": "Session length depends on the program. Ask us on WhatsApp and we will share the details for the program you are interested in.",
+    "keywords": [
+      "long",
+      "duration",
+      "length",
+      "minutes",
+      "hours",
+      "session"
+    ],
+    "status": "TODO_CONFIRM"
+  },
+  {
+    "id": "certificate",
+    "q": "Do students receive a certificate?",
+    "a": "Please ask the team on WhatsApp about certificates for the program you are interested in.",
+    "keywords": [
+      "certificate",
+      "certificates",
+      "diploma",
+      "certification",
+      "award"
+    ],
+    "status": "TODO_CONFIRM"
+  },
+  {
+    "id": "contact",
+    "q": "How can I contact Brainscope?",
+    "a": "The fastest way is WhatsApp. You can also call us or follow us on Instagram @brainscopecenter.",
+    "keywords": [
+      "contact",
+      "phone",
+      "number",
+      "whatsapp",
+      "call",
+      "instagram",
+      "reach"
+    ]
+  }
+]

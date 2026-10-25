@@ -1,0 +1,110 @@
+---
+// Site footer: brand blurb, contact details, navigation, social links, copyright.
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { type Locale, getDictionary, localizedPath } from '@/i18n';
+import { FOOTER_NAV_ITEMS } from '@/data/nav';
+import { CONTACT, SOCIAL, SITE, isConfirmed, telLink, whatsappLink } from '@/data/site';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const year = new Date().getFullYear();
+const socials = [
+  { name: 'instagram', label: `Instagram @${SOCIAL.instagramHandle}`, href: SOCIAL.instagram },
+  { name: 'facebook', label: 'Facebook', href: SOCIAL.facebook },
+  { name: 'tiktok', label: 'TikTok', href: SOCIAL.tiktok },
+] as const;
+const linkClass = 'text-ink-muted transition-colors hover:text-white';
+---
+
+<footer class="bg-circuit border-t border-white/10 pt-16 pb-28 text-sm lg:pb-12">
+  <div class="container-brand grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+    <div class="lg:col-span-2">
+      <Logo />
+      <p class="mt-4 font-semibold tracking-wide text-violet">{t.footer.tagline}</p>
+      <p class="mt-3 max-w-md text-ink-muted">{t.footer.blurb}</p>
+    </div>
+
+    <div>
+      <h2 class="text-base font-semibold text-white">{t.footer.contactHeading}</h2>
+      <ul class="mt-4 space-y-3">
+        <li class="flex gap-3">
+          <Icon name="pin" class="mt-0.5 size-5 shrink-0 text-violet" />
+          <span>
+            <span class="sr-only">{t.footer.addressLabel}: </span>
+            <span class="text-ink-muted">{t.footer.address}</span>
+          </span>
+        </li>
+        <li class="flex gap-3">
+          <Icon name="whatsapp" class="mt-0.5 size-5 shrink-0 text-violet" />
+          <a href={whatsappLink(t.whatsapp.general)} target="_blank" rel="noopener" class={linkClass}>
+            <span class="sr-only">{t.footer.whatsappLabel}: </span><bdi dir="ltr">{CONTACT.whatsappDisplay}</bdi>
+            <span class="sr-only"> {t.a11y.opensInNewTab}</span>
+          </a>
+        </li>
+        <li class="flex gap-3">
+          <Icon name="phone" class="mt-0.5 size-5 shrink-0 text-violet" />
+          <a href={telLink()} class={linkClass}>
+            <span class="sr-only">{t.footer.phoneLabel}: </span><bdi dir="ltr">{CONTACT.phoneDisplay}</bdi>
+          </a>
+        </li>
+        {
+          isConfirmed(CONTACT.email) && (
+            <li class="flex gap-3">
+              <Icon name="mail" class="mt-0.5 size-5 shrink-0 text-violet" />
+              <a href={`mailto:${CONTACT.email}`} class={linkClass}>
+                <span class="sr-only">{t.footer.emailLabel}: </span>
+                {CONTACT.email}
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </div>
+
+    <div class="grid grid-cols-2 gap-8 lg:grid-cols-1">
+      <nav aria-label={t.a11y.footerNav}>
+        <h2 class="text-base font-semibold text-white">{t.footer.navHeading}</h2>
+        <ul class="mt-4 space-y-2">
+          {
+            FOOTER_NAV_ITEMS.map((item) => (
+              <li>
+                <a href={localizedPath(locale, `/#${item.anchor}`)} class={linkClass}>
+                  {t.nav[item.key]}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <div>
+        <h2 class="text-base font-semibold text-white">{t.footer.followHeading}</h2>
+        <ul class="mt-4 flex gap-2">
+          {
+            socials
+              .filter((s) => isConfirmed(s.href))
+              .map((s) => (
+                <li>
+                  <a
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-flex size-11 items-center justify-center rounded-full border border-white/15 text-white transition-colors hover:border-violet hover:text-violet"
+                  >
+                    <Icon name={s.name} label={`${s.label} ${t.a11y.opensInNewTab}`} />
+                  </a>
+                </li>
+              ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-brand mt-12 border-t border-white/10 pt-6 text-ink-muted">
+    <p>© {year} {SITE.name}. {t.footer.rights}</p>
+  </div>
+</footer>

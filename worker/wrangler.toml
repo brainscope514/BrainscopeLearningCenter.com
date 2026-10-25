@@ -1,0 +1,24 @@
+# Cloudflare Worker: Brainscope chatbot v2 proxy. See README.md for deployment.
+name = "brainscope-chat"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Comma-separated list of origins allowed to call the Worker (your website). TODO_CONFIRM: set the real domain.
+ALLOWED_ORIGINS = "https://TODO_CONFIRM-domain.example,https://phoenix-falcon001.github.io"
+# Model and limits (cost controls). Opus 5.5 at low effort by default; claude-haiku-5-5 is a much cheaper option.
+CLAUDE_MODEL = "claude-opus-5-5"
+MAX_OUTPUT_TOKENS = "1024"
+
+# Per-IP rate limit: 15 requests per 60 s (Workers Rate Limiting binding).
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 15
+  period = 60
+
+# The API key is a SECRET, never a [vars] entry and never committed:
+#   npx wrangler secret put ANTHROPIC_API_KEY

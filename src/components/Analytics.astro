@@ -1,0 +1,49 @@
+---
+// Analytics slot (privacy-first): renders NOTHING while every value in ANALYTICS (src/data/site.ts) is empty.
+// Enable one provider by filling its id; prefer Plausible (cookie-less). GA4 / Meta Pixel set cookies and may
+// require a consent banner before going live.
+import { ANALYTICS } from '@/data/site';
+
+const { plausibleDomain, gaId, metaPixelId } = ANALYTICS;
+---
+
+{plausibleDomain && <script is:inline defer data-domain={plausibleDomain} src="https://plausible.io/js/script.js" />}
+{
+  gaId && (
+    <>
+      <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
+      <script is:inline define:vars={{ gaId }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', gaId, { anonymize_ip: true });
+      </script>
+    </>
+  )
+}
+{
+  metaPixelId && (
+    <script is:inline define:vars={{ metaPixelId }}>
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = '2.0';
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', metaPixelId);
+      fbq('track', 'PageView');
+    </script>
+  )
+}

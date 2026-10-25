@@ -1,0 +1,38 @@
+---
+// PLACEHOLDER visual for photos that don't exist yet: brand-pattern panel with an icon and label.
+// Swap for <Image src={...} /> from src/assets/photos/ when real photos are available.
+interface Props {
+  label: string;
+  /** Aspect ratio, e.g. "1 / 1" or "4 / 5". */
+  ratio?: string;
+  initials?: string;
+  class?: string;
+}
+const { label, ratio = '4 / 5', initials, class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    'bg-circuit relative grid place-items-center overflow-hidden rounded-xl border border-white/10',
+    className,
+  ]}
+  style={`aspect-ratio:${ratio}`}
+  data-placeholder="PLACEHOLDER"
+>
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgb(106_44_255/0.35),transparent_65%)]" aria-hidden="true"></div>
+  <div class="relative flex flex-col items-center gap-3 text-center">
+    {
+      initials ? (
+        <span class="grid size-20 place-items-center rounded-full border border-violet/50 bg-purple/20 text-2xl font-bold text-white" aria-hidden="true">
+          {initials}
+        </span>
+      ) : (
+        <svg class="size-12 text-violet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M4 7h3l2-3h6l2 3h3v12H4V7Z" />
+          <circle cx="12" cy="13" r="3.5" />
+        </svg>
+      )
+    }
+    <span class="text-sm text-ink-muted">{label}</span>
+  </div>
+</div>

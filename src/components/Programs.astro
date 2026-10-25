@@ -1,0 +1,58 @@
+---
+// Programs: four category cards (tilt + glow on hover) linking to their subsection, or WhatsApp for Development.
+import Section from './Section.astro';
+import Button from './Button.astro';
+import IconBadge from './IconBadge.astro';
+import LineIcon from './LineIcon.astro';
+import { type Locale, getDictionary, trialHref } from '@/i18n';
+import { whatsappLink } from '@/data/site';
+
+interface Props {
+  locale: Locale;
+}
+const t = getDictionary(Astro.props.locale);
+const ICONS: Record<string, string> = { academic: 'academic', tracks: 'robot', university: 'university', development: 'development' };
+---
+
+<Section id="programs" eyebrow={t.programs.eyebrow} title={t.programs.title} intro={t.programs.intro} tone="deep">
+  <ul class="mt-14 grid gap-6 sm:grid-cols-2 xl:grid-cols-4" data-reveal="stagger">
+    {
+      t.programs.categories.map((cat) => {
+        // Development has no subsection, so its card opens WhatsApp with a message naming the program.
+        const link = cat.id === 'development' ? { href: whatsappLink(`${t.whatsapp.general} (${cat.title})`), external: true } : { href: `#${cat.id}`, external: false };
+        return (
+          <li data-tilt="5" class="program-card group relative flex flex-col rounded-xl border border-white/10 bg-navy-800/80 p-7 shadow-card transition-[border-color,box-shadow] duration-300 hover:border-violet/50 hover:shadow-glow-purple">
+            <IconBadge name={ICONS[cat.id] ?? 'more'} />
+            <h3 class="mt-6 text-xl font-bold text-white">{cat.title}</h3>
+            <p class="mt-2 text-ink-muted">{cat.text}</p>
+            <ul class="mt-5 space-y-2 text-sm text-ink-muted">
+              {cat.items.map((item) => (
+                <li class="flex gap-2">
+                  <LineIcon name="check" class="mt-0.5 size-4 shrink-0 text-electric" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <a
+              href={link.href}
+              target={link.external ? '_blank' : undefined}
+              rel={link.external ? 'noopener' : undefined}
+              class="mt-auto inline-flex items-center gap-2 pt-6 font-semibold text-violet after:absolute after:inset-0 after:rounded-xl hover:text-white"
+            >
+              {link.external ? t.programs.ask : t.programs.explore}
+              <span class="sr-only">: {cat.title}{link.external && ` ${t.a11y.opensInNewTab}`}</span>
+              <svg class="size-4 transition-transform group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+  <Fragment slot="cta">
+    <Button href={trialHref(Astro.props.locale)} arrow>
+      {t.cta.bookTrial}
+    </Button>
+  </Fragment>
+</Section>

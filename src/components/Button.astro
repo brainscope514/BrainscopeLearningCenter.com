@@ -1,0 +1,61 @@
+---
+// Call-to-action link styled as a button (primary / secondary), optionally magnetic, with RTL-aware arrow.
+import Icon from './Icon.astro';
+
+type IconName = 'whatsapp' | 'phone' | 'instagram';
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary';
+  /** Opens in a new tab; `newTabLabel` is announced to screen readers. */
+  external?: boolean;
+  newTabLabel?: string;
+  icon?: IconName;
+  arrow?: boolean;
+  magnetic?: boolean;
+  class?: string;
+  [key: `data-${string}`]: string | undefined;
+}
+const {
+  href,
+  variant = 'primary',
+  external = false,
+  newTabLabel,
+  icon,
+  arrow = false,
+  magnetic = false,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<a
+  href={href}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener' : undefined}
+  data-magnetic={magnetic ? '0.25' : undefined}
+  class:list={[
+    'group inline-flex min-h-12 items-center justify-center gap-2.5 rounded-pill px-6 py-2.5 text-center text-base font-semibold sm:whitespace-nowrap transition-[background-color,border-color,box-shadow] duration-300',
+    variant === 'primary' && 'bg-purple text-white shadow-glow-purple hover:bg-purple-400',
+    variant === 'secondary' && 'border border-white/25 bg-white/5 text-white backdrop-blur-sm hover:border-violet hover:bg-white/10',
+    className,
+  ]}
+  {...rest}
+>
+  {icon && <Icon name={icon} class="size-5" />}
+  <slot />
+  {
+    arrow && (
+      <svg
+        class="size-4 transition-transform duration-300 ease-brand group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1"
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    )
+  }
+  {external && newTabLabel && <span class="sr-only"> {newTabLabel}</span>}
+</a>

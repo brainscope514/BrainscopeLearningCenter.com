@@ -1,0 +1,85 @@
+---
+// About / Why Brainscope: positioning statement and four value pillars joined by a circuit line that draws on scroll.
+import Section from './Section.astro';
+import Button from './Button.astro';
+import IconBadge from './IconBadge.astro';
+import { type Locale, getDictionary, trialHref } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+const t = getDictionary(Astro.props.locale);
+---
+
+<Section id="about" eyebrow={t.about.eyebrow} title={t.about.title} intro={t.about.intro} tone="circuit">
+  <div class="about-pillars relative mt-14" data-about-pillars>
+    <!-- Circuit bus: horizontal through the icons on desktop, vertical along the inline-start edge on mobile. -->
+    <span class="about-bus" aria-hidden="true" data-about-bus></span>
+    <ul class="relative grid gap-10 lg:grid-cols-4 lg:gap-8" data-reveal="stagger">
+      {
+        t.about.pillars.map((pillar) => (
+          <li class="flex gap-5 lg:flex-col lg:gap-6">
+            <IconBadge name={pillar.icon} size="lg" class="bg-navy-800" />
+            <div>
+              <h3 class="text-xl font-bold text-white">{pillar.title}</h3>
+              <p class="mt-2 text-ink-muted">{pillar.text}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <Fragment slot="cta">
+    <Button href={trialHref(Astro.props.locale)} arrow>
+      {t.cta.bookTrial}
+    </Button>
+  </Fragment>
+</Section>
+
+<style>
+  .about-bus {
+    position: absolute;
+    inset-block: 2rem;
+    inset-inline-start: 2rem;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--color-purple), var(--color-electric));
+    box-shadow: 0 0 12px rgb(106 44 255 / 0.6);
+    transform-origin: top center;
+  }
+  @media (min-width: 1024px) {
+    .about-bus {
+      inset-block: 2rem auto;
+      /* From the first icon centre to the last: 4 columns, 2rem gap, 4rem icons. */
+      inset-inline: 2rem calc(25% - 3.5rem);
+      width: auto;
+      height: 2px;
+      background: linear-gradient(to right, var(--color-purple), var(--color-electric));
+      transform-origin: left center;
+    }
+    :global([dir='rtl']) .about-bus {
+      background: linear-gradient(to left, var(--color-purple), var(--color-electric));
+      transform-origin: right center;
+    }
+  }
+</style>
+
+<script>
+  import { gsap, prefersReducedMotion, registerMotion } from '@/lib/motion';
+
+  // Draw the circuit bus with the scroll (scaleX on desktop, scaleY on mobile); static under reduced motion.
+  registerMotion();
+  const bus = document.querySelector<HTMLElement>('[data-about-bus]');
+  const pillars = document.querySelector<HTMLElement>('[data-about-pillars]');
+  if (bus && pillars && !prefersReducedMotion()) {
+    const mm = gsap.matchMedia();
+    mm.add({ desktop: '(min-width: 1024px)', mobile: '(max-width: 1023px)' }, (ctx) => {
+      const prop = ctx.conditions?.desktop ? 'scaleX' : 'scaleY';
+      gsap.fromTo(
+        bus,
+        { [prop]: 0 },
+        { [prop]: 1, ease: 'none', scrollTrigger: { trigger: pillars, start: 'top 80%', end: 'bottom 70%', scrub: 0.6 } },
+      );
+    });
+    window.addEventListener('pagehide', () => mm.revert(), { once: true });
+  }
+</script>

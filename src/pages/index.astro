@@ -1,0 +1,55 @@
+---
+// Root: sends visitors to their language (saved choice → browser language → /en). No-JS fallback: /en/.
+import { LOCALES, DEFAULT_LOCALE, LOCALE_TAGS, withBase } from '@/i18n';
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const fallback = withBase(`/${DEFAULT_LOCALE}/`);
+const config = JSON.stringify({ locales: LOCALES, fallback: DEFAULT_LOCALE, base: withBase('/') });
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#081D3A" />
+    <title>Brainscope Learning Center</title>
+    <link rel="icon" href={withBase('/favicon.ico')} sizes="any" />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href={new URL(fallback, site).href} />
+    {
+      LOCALES.map((code) => (
+        <link rel="alternate" hreflang={LOCALE_TAGS[code].hreflang} href={new URL(withBase(`/${code}/`), site).href} />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={new URL(fallback, site).href} />
+    <script is:inline define:vars={{ config }}>
+      (function () {
+        var c = JSON.parse(config);
+        var pick = null;
+        try {
+          var saved = localStorage.getItem('bs-locale');
+          if (c.locales.indexOf(saved) !== -1) pick = saved;
+        } catch (e) {}
+        if (!pick) {
+          var langs = navigator.languages || [navigator.language || ''];
+          for (var i = 0; i < langs.length && !pick; i++) {
+            var code = String(langs[i]).slice(0, 2).toLowerCase();
+            if (c.locales.indexOf(code) !== -1) pick = code;
+          }
+        }
+        location.replace(c.base + (pick || c.fallback) + '/' + location.hash);
+      })();
+    </script>
+    <noscript><meta http-equiv="refresh" content={`0; url=${fallback}`} /></noscript>
+    <style>
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #081d3a; color: #fff; font-family: system-ui, sans-serif; }
+      a { color: #a166ff; margin: 0 0.5rem; }
+    </style>
+  </head>
+  <body>
+    <p>
+      {LOCALES.map((code) => <a href={withBase(`/${code}/`)} hreflang={code} lang={code}>{code.toUpperCase()}</a>)}
+    </p>
+  </body>
+</html>

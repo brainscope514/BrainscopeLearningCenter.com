@@ -1,0 +1,158 @@
+---
+// Sticky site header: logo, primary nav, language switcher, "Book a free trial" CTA, mobile drawer.
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { type Locale, getDictionary, localizedPath, trialHref } from '@/i18n';
+import { NAV_ITEMS } from '@/data/nav';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const items = NAV_ITEMS.map((item) => ({ label: t.nav[item.key], href: localizedPath(locale, `/#${item.anchor}`) }));
+const trial = trialHref(locale);
+---
+
+<header class="sticky top-0 z-50 border-b border-white/10 bg-navy/85 backdrop-blur-md">
+  <div class="container-brand flex h-16 items-center gap-4 lg:h-20">
+    <a href={localizedPath(locale)} class="shrink-0">
+      <Logo />
+      <span class="sr-only">{t.a11y.homeLink}</span>
+    </a>
+
+    <nav aria-label={t.a11y.mainNav} class="ms-auto hidden xl:block">
+      <ul class="flex items-center">
+        {
+          items.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="rounded-md px-2 py-2 text-[0.8125rem] font-medium whitespace-nowrap 2xl:px-3 2xl:text-sm text-ink-muted transition-colors hover:text-white"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="ms-auto hidden items-center gap-3 lg:flex xl:ms-0">
+      <LanguageSwitcher locale={locale} />
+      <a
+        href={trial}
+        class="inline-flex min-h-11 items-center rounded-pill bg-purple px-5 text-sm whitespace-nowrap font-semibold text-white shadow-glow-purple transition-transform duration-200 ease-brand hover:-translate-y-0.5"
+        >{t.cta.bookTrial}</a
+      >
+    </div>
+
+    <button
+      type="button"
+      class="ms-auto inline-flex size-11 items-center justify-center rounded-md text-white hover:bg-white/10 lg:ms-0 xl:hidden"
+      aria-label={t.a11y.openMenu}
+      aria-haspopup="dialog"
+      aria-controls="mobile-menu"
+      aria-expanded="false"
+      data-menu-open
+    >
+      <Icon name="menu" class="size-6" />
+    </button>
+  </div>
+
+  <dialog
+    id="mobile-menu"
+    aria-label={t.a11y.mainNav}
+    class="mobile-drawer m-0 ms-auto h-dvh max-h-none w-[min(22rem,88vw)] max-w-none bg-navy-900 p-0 text-white backdrop:bg-black/60"
+  >
+    <div class="flex h-full flex-col gap-6 p-6">
+      <div class="flex items-center justify-between">
+        <Logo markOnly />
+        <button
+          type="button"
+          class="inline-flex size-11 items-center justify-center rounded-md hover:bg-white/10"
+          aria-label={t.a11y.closeMenu}
+          data-menu-close
+        >
+          <Icon name="close" class="size-6" />
+        </button>
+      </div>
+      <nav aria-label={t.a11y.mainNav}>
+        <ul class="flex flex-col gap-1">
+          {
+            items.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  data-menu-link
+                  class="block rounded-md px-4 py-3 text-lg font-semibold hover:bg-white/5"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <a
+        href={trial}
+        data-menu-link
+        class="inline-flex min-h-12 items-center justify-center rounded-pill bg-purple px-5 font-semibold text-white shadow-glow-purple"
+        >{t.cta.bookTrial}</a
+      >
+      <div class="mt-auto border-t border-white/10 pt-4">
+        <LanguageSwitcher locale={locale} variant="full" />
+      </div>
+    </div>
+  </dialog>
+</header>
+
+<style>
+  /* Drawer slides in from the inline-end edge (right in LTR, left in RTL). */
+  .mobile-drawer {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .mobile-drawer[open] {
+      animation: drawer-in 0.32s var(--ease-brand);
+    }
+    :global([dir='rtl']) .mobile-drawer[open] {
+      animation-name: drawer-in-rtl;
+    }
+  }
+  @keyframes drawer-in {
+    from {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes drawer-in-rtl {
+    from {
+      transform: translateX(-100%);
+    }
+  }
+</style>
+
+<script>
+  // Mobile drawer: native <dialog> gives focus trapping + Escape-to-close for free.
+  const dialog = document.getElementById('mobile-menu') as HTMLDialogElement | null;
+  const opener = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  if (dialog && opener) {
+    const close = () => dialog.close();
+    opener.addEventListener('click', () => {
+      dialog.showModal();
+      opener.setAttribute('aria-expanded', 'true');
+    });
+    dialog.addEventListener('close', () => {
+      opener.setAttribute('aria-expanded', 'false');
+      opener.focus();
+    });
+    dialog.querySelector('[data-menu-close]')?.addEventListener('click', close);
+    dialog.querySelectorAll('[data-menu-link]').forEach((link) => link.addEventListener('click', close));
+    // Click on the backdrop closes the drawer.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) close();
+    });
+  }
+</script>

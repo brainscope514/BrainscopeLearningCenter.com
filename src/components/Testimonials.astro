@@ -1,0 +1,34 @@
+---
+// Testimonials: renders only real entries from src/data/testimonials.ts, and only when FLAGS.SHOW_TESTIMONIALS is true.
+import Section from './Section.astro';
+import { type Locale, getDictionary } from '@/i18n';
+import { FLAGS } from '@/data/site';
+import { TESTIMONIALS } from '@/data/testimonials';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const show = FLAGS.SHOW_TESTIMONIALS && TESTIMONIALS.length > 0;
+---
+
+{
+  show && (
+    <Section id="testimonials" eyebrow={t.testimonials.eyebrow} title={t.testimonials.title} tone="navy">
+      <ul class="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-reveal="stagger">
+        {TESTIMONIALS.map((item) => (
+          <li>
+            <figure class="h-full rounded-xl border border-white/10 bg-navy-800/70 p-7 shadow-card">
+              <blockquote class="text-lg text-white">“{item.quote[locale] ?? item.quote.en}”</blockquote>
+              <figcaption class="mt-5 text-sm">
+                <span class="font-semibold text-white">{item.name}</span>
+                <span class="block text-ink-muted">{item.role[locale] ?? item.role.en}</span>
+              </figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  )
+}

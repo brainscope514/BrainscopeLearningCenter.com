@@ -1,0 +1,21 @@
+---
+// Glowing rounded square that frames a LineIcon (cards, pillars, list items).
+import LineIcon from './LineIcon.astro';
+
+interface Props {
+  name: string;
+  size?: 'md' | 'lg';
+  class?: string;
+}
+const { name, size = 'md', class: className } = Astro.props;
+---
+
+<span
+  class:list={[
+    'grid shrink-0 place-items-center rounded-lg border border-violet/30 bg-purple/10 text-violet shadow-glow-violet',
+    size === 'lg' ? 'size-16' : 'size-12',
+    className,
+  ]}
+>
+  <LineIcon name={name} class={size === 'lg' ? 'size-8' : 'size-6'} />
+</span>

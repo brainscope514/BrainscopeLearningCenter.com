@@ -1,0 +1,66 @@
+---
+// Academic Support: subjects grid, agenda/homework coaching, and the weekly parent review as a 3-step visual.
+import Section from './Section.astro';
+import Button from './Button.astro';
+import IconBadge from './IconBadge.astro';
+import { type Locale, getDictionary, trialHref } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+const t = getDictionary(Astro.props.locale);
+// Icons follow the subject order in the dictionary: math, physics, chemistry, biology, French, English.
+const SUBJECT_ICONS = ['math', 'atom', 'flask', 'dna', 'language', 'language'];
+const STEP_ICONS = ['plan', 'follow', 'review'];
+---
+
+<Section id="academic" eyebrow={t.academic.eyebrow} title={t.academic.title} intro={t.academic.intro} tone="deep">
+  <div class="mt-14 grid gap-10 lg:grid-cols-2">
+    <div>
+      <h3 class="text-xl font-bold text-white" data-reveal>{t.academic.subjectsTitle}</h3>
+      <ul class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3" data-reveal="stagger">
+        {
+          t.academic.subjects.map((subject, i) => (
+            <li class="flex items-center gap-3 rounded-lg border border-white/10 bg-navy-800/70 p-3 font-semibold text-white">
+              <IconBadge name={SUBJECT_ICONS[i] ?? 'academic'} class="size-10" />
+              {subject}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="rounded-xl border border-violet/30 bg-purple/10 p-7 shadow-glow-purple" data-reveal>
+      <div class="flex items-center gap-4">
+        <IconBadge name="agenda" />
+        <h3 class="text-xl font-bold text-white">{t.academic.agendaTitle}</h3>
+      </div>
+      <p class="mt-4 text-ink-muted">{t.academic.agendaText}</p>
+    </div>
+  </div>
+
+  <h3 class="mt-16 text-xl font-bold text-white" data-reveal>{t.academic.reviewTitle}</h3>
+  <ol class="mt-6 grid gap-6 md:grid-cols-3" data-reveal="stagger">
+    {
+      t.academic.reviewSteps.map((step, i) => (
+        <li class="relative rounded-xl border border-white/10 bg-navy-800/70 p-6">
+          <div class="flex items-center gap-4">
+            <span class="grid size-10 place-items-center rounded-full bg-purple font-bold text-white shadow-glow-purple">{i + 1}</span>
+            <IconBadge name={STEP_ICONS[i] ?? 'check'} class="size-10" />
+          </div>
+          <h4 class="mt-5 text-lg font-bold text-white">{step.title}</h4>
+          <p class="mt-2 text-ink-muted">{step.text}</p>
+          {i < t.academic.reviewSteps.length - 1 && (
+            <svg class="absolute -end-5 top-1/2 hidden size-4 -translate-y-1/2 text-violet md:block rtl:-scale-x-100" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+  <Fragment slot="cta">
+    <Button href={trialHref(Astro.props.locale)} arrow>
+      {t.cta.bookTrial}
+    </Button>
+  </Fragment>
+</Section>

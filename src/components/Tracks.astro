@@ -1,0 +1,158 @@
+---
+// Future Skills tracks showcase. Desktop + motion: pinned horizontal scroll (direction flips in RTL).
+// Mobile, reduced motion or no JS: a plain stacked grid. Each card ends with a WhatsApp "Ask about this track".
+import Section from './Section.astro';
+import Button from './Button.astro';
+import Insignia from './Insignia.astro';
+import LineIcon from './LineIcon.astro';
+import { type Locale, getDictionary, fill, trialHref } from '@/i18n';
+import { whatsappLink } from '@/data/site';
+
+interface Props {
+  locale: Locale;
+}
+const t = getDictionary(Astro.props.locale);
+const KIND: Record<string, 'badge' | 'rank' | 'milestone'> = { 'robo-kids': 'badge', falcon: 'rank', 'ai-python': 'milestone' };
+const ICON: Record<string, string> = { 'robo-kids': 'robot', falcon: 'leadership', 'ai-python': 'ai' };
+---
+
+<Section id="tracks" eyebrow={t.tracks.eyebrow} title={t.tracks.title} intro={t.tracks.intro} tone="circuit" class="tracks overflow-hidden">
+  <div class="tracks__viewport mt-14" data-tracks>
+    <ul class="tracks__rail grid gap-6 lg:grid-cols-3" data-tracks-rail>
+      {
+        t.tracks.items.map((track) => (
+          <li
+            class:list={[
+              'tracks__card flex flex-col rounded-xl border bg-navy-800/90 p-7 shadow-card lg:p-8',
+              track.id === 'falcon' ? 'border-violet/60 shadow-glow-purple' : 'border-white/10',
+            ]}
+          >
+            <div class="flex items-center gap-4">
+              <span class="grid size-12 place-items-center rounded-lg bg-purple text-white shadow-glow-purple">
+                <LineIcon name={ICON[track.id] ?? 'robot'} />
+              </span>
+              <h3 class="text-2xl font-bold text-white">{track.name}</h3>
+            </div>
+            <dl class="mt-6 flex flex-wrap gap-2 text-sm">
+              <div class="rounded-pill border border-white/15 px-3 py-1">
+                <dt class="inline text-ink-muted">{t.tracks.ageLabel}: </dt>
+                <dd class="inline font-semibold text-white">{track.age}</dd>
+              </div>
+              <div class="rounded-pill border border-white/15 px-3 py-1">
+                <dt class="inline text-ink-muted">{t.tracks.toolsLabel}: </dt>
+                <dd class="inline font-semibold text-white" dir="ltr">{track.tools}</dd>
+              </div>
+            </dl>
+            <p class="mt-5 text-ink-muted">{track.summary}</p>
+            <h4 class="mt-6 text-sm font-semibold tracking-wide text-violet uppercase">{t.tracks.buildsLabel}</h4>
+            <ul class="mt-3 space-y-2 text-sm text-ink-muted">
+              {track.builds.map((item) => (
+                <li class="flex gap-2">
+                  <LineIcon name="check" class="mt-0.5 size-4 shrink-0 text-electric" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <h4 class="mt-6 text-sm font-semibold tracking-wide text-violet uppercase">
+              {t.tracks.progressionLabel}
+              <span class="ms-1 font-normal tracking-normal text-ink-muted normal-case">· {track.progression}</span>
+            </h4>
+            <div class="mt-4">
+              <Insignia kind={KIND[track.id] ?? 'milestone'} levels={track.levels} />
+            </div>
+            <div class="mt-auto pt-8">
+              <Button
+                href={whatsappLink(fill(t.tracks.waMessage, { track: track.name }))}
+                variant="secondary"
+                icon="whatsapp"
+                external
+                newTabLabel={t.a11y.opensInNewTab}
+              >
+                {t.tracks.ask}
+              </Button>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <Fragment slot="cta">
+    <Button href={trialHref(Astro.props.locale)} arrow>
+      {t.cta.bookTrial}
+    </Button>
+  </Fragment>
+</Section>
+
+<style>
+  /* JS adds .is-horizontal on desktop (motion allowed): cards become a single row scrolled by the pin. */
+  .tracks__viewport.is-horizontal .tracks__rail {
+    display: flex;
+    width: max-content;
+  }
+  .tracks__viewport.is-horizontal .tracks__card {
+    width: min(34rem, 42vw);
+  }
+</style>
+
+<script>
+  import { gsap, ScrollTrigger, isRTL, registerMotion } from '@/lib/motion';
+
+  registerMotion();
+  const section = document.getElementById('tracks');
+  const viewport = section?.querySelector<HTMLElement>('[data-tracks]');
+  const rail = section?.querySelector<HTMLElement>('[data-tracks-rail]');
+
+  if (section && viewport && rail) {
+    const mm = gsap.matchMedia();
+    // Pinned horizontal showcase: desktop only, never under reduced motion.
+    mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+      viewport.classList.add('is-horizontal');
+      const distance = () => Math.max(0, rail.scrollWidth - viewport.clientWidth);
+      const tween = gsap.to(rail, {
+        x: () => (isRTL() ? distance() : -distance()),
+        ease: 'none',
+        scrollTrigger: {
+          // Pin only the card row: centred when it fits the screen, otherwise just below the sticky header.
+          trigger: viewport,
+          start: () => (viewport.offsetHeight < window.innerHeight - 120 ? 'center 55%' : 'top 96px'),
+          end: () => `+=${distance()}`,
+          pin: viewport,
+          scrub: 0.8,
+          invalidateOnRefresh: true,
+          refreshPriority: 1,
+        },
+      });
+      // Keyboard support: focusing a control in an off-screen card scrolls the page to where that card is shown.
+      const cards = Array.from(rail.children) as HTMLElement[];
+      const onFocus = (event: FocusEvent) => {
+        const card = (event.target as Element).closest('li');
+        const st = tween.scrollTrigger;
+        const index = card ? cards.indexOf(card as HTMLElement) : -1;
+        if (!st || index < 0) return;
+        viewport.scrollLeft = 0; // undo any native scroll of the clipped row
+        const progress = cards.length > 1 ? index / (cards.length - 1) : 0;
+        window.scrollTo({ top: st.start + progress * (st.end - st.start), behavior: 'instant' });
+      };
+      rail.addEventListener('focusin', onFocus);
+      return () => {
+        rail.removeEventListener('focusin', onFocus);
+        viewport.classList.remove('is-horizontal');
+      };
+    });
+    // Insignia reveal (ranks/badges pop in level by level) when the cards come into view.
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      section.querySelectorAll('[data-insignia]').forEach((list) => {
+        gsap.from(list.querySelectorAll('[data-insignia-item]'), {
+          scale: 0.4,
+          autoAlpha: 0,
+          duration: 0.5,
+          stagger: 0.12,
+          ease: 'back.out(2)',
+          scrollTrigger: { trigger: viewport, start: 'top 70%', once: true },
+        });
+      });
+    });
+    ScrollTrigger.sort();
+    window.addEventListener('pagehide', () => mm.revert(), { once: true });
+  }
+</script>

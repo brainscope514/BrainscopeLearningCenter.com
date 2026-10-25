@@ -1,0 +1,107 @@
+---
+// Student pathway timeline: Discover → Learn → Build → Demo Day → Lead, with a progress line that fills on scroll.
+import Section from './Section.astro';
+import Button from './Button.astro';
+import LineIcon from './LineIcon.astro';
+import { type Locale, getDictionary, trialHref } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+const t = getDictionary(Astro.props.locale);
+const ICONS = ['discover', 'learn', 'build', 'demo', 'lead'];
+const DEMO_INDEX = 3;
+---
+
+<Section id="pathway" eyebrow={t.pathway.eyebrow} title={t.pathway.title} intro={t.pathway.intro} tone="deep">
+  <div class="pathway relative mt-14" data-pathway>
+    <span class="pathway__track" aria-hidden="true"></span>
+    <span class="pathway__fill" aria-hidden="true" data-pathway-fill></span>
+    <ol class="relative grid gap-10 lg:grid-cols-5 lg:gap-6" data-reveal="stagger">
+      {
+        t.pathway.steps.map((step, i) => {
+          const demo = i === DEMO_INDEX;
+          return (
+            <li class="flex gap-5 lg:flex-col lg:items-center lg:text-center">
+              <span
+                class:list={[
+                  'relative grid size-14 shrink-0 place-items-center rounded-full border-2 bg-navy-900',
+                  demo ? 'border-magenta text-magenta shadow-[0_0_28px_rgb(255_77_157/0.5)]' : 'border-violet text-violet',
+                ]}
+              >
+                <LineIcon name={ICONS[i] ?? 'check'} />
+              </span>
+              <div>
+                <p class="text-xs font-semibold tracking-[0.18em] text-ink-muted">0{i + 1}</p>
+                <h3 class="mt-1 text-lg font-bold text-white">{step.title}</h3>
+                {demo && (
+                  <span class="mt-2 inline-block rounded-pill border border-magenta/50 bg-magenta/10 px-2 py-0.5 text-xs font-semibold text-[#ff8fbf]">
+                    {t.pathway.demoDay}
+                  </span>
+                )}
+                <p class="mt-2 text-sm text-ink-muted">{step.text}</p>
+              </div>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </div>
+  <Fragment slot="cta">
+    <Button href={trialHref(Astro.props.locale)} arrow magnetic>
+      {t.cta.bookTrial}
+    </Button>
+  </Fragment>
+</Section>
+
+<style>
+  /* Track + fill run through the step nodes: vertical along inline-start on mobile, horizontal on desktop. */
+  .pathway__track,
+  .pathway__fill {
+    position: absolute;
+    inset-block: 1.75rem;
+    inset-inline-start: calc(1.75rem - 1px);
+    width: 2px;
+  }
+  .pathway__track {
+    background: rgb(255 255 255 / 0.12);
+  }
+  .pathway__fill {
+    background: linear-gradient(to bottom, var(--color-purple), var(--color-magenta));
+    transform-origin: top center;
+  }
+  @media (min-width: 1024px) {
+    .pathway__track,
+    .pathway__fill {
+      inset-block: calc(1.75rem - 1px) auto;
+      inset-inline: 10%;
+      width: auto;
+      height: 2px;
+    }
+    .pathway__fill {
+      background: linear-gradient(to right, var(--color-purple), var(--color-magenta));
+      transform-origin: left center;
+    }
+    :global([dir='rtl']) .pathway__fill {
+      background: linear-gradient(to left, var(--color-purple), var(--color-magenta));
+      transform-origin: right center;
+    }
+  }
+</style>
+
+<script>
+  import { gsap, prefersReducedMotion, registerMotion } from '@/lib/motion';
+
+  // Fill the timeline as the visitor scrolls through it (static, fully drawn, under reduced motion).
+  registerMotion();
+  const root = document.querySelector<HTMLElement>('[data-pathway]');
+  const fill = root?.querySelector<HTMLElement>('[data-pathway-fill]');
+  if (root && fill && !prefersReducedMotion()) {
+    const mm = gsap.matchMedia();
+    mm.add({ desktop: '(min-width: 1024px)', mobile: '(max-width: 1023px)' }, (ctx) => {
+      const prop = ctx.conditions?.desktop ? 'scaleX' : 'scaleY';
+      gsap.fromTo(fill, { [prop]: 0 }, { [prop]: 1, ease: 'none', scrollTrigger: { trigger: root, start: 'top 75%', end: 'bottom 60%', scrub: 0.6 } });
+    });
+    window.addEventListener('pagehide', () => mm.revert(), { once: true });
+  }
+</script>

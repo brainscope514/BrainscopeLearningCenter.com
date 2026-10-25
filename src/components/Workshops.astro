@@ -1,0 +1,48 @@
+---
+// Workshops: one card per workshop with a pre-filled "Ask about this workshop" WhatsApp link,
+// plus a custom-workshop request for schools and organizations.
+import Section from './Section.astro';
+import Button from './Button.astro';
+import IconBadge from './IconBadge.astro';
+import Icon from './Icon.astro';
+import { type Locale, getDictionary, fill } from '@/i18n';
+import { whatsappLink } from '@/data/site';
+
+interface Props {
+  locale: Locale;
+}
+const t = getDictionary(Astro.props.locale);
+---
+
+<Section id="workshops" eyebrow={t.workshops.eyebrow} title={t.workshops.title} intro={t.workshops.intro} tone="deep">
+  <ul class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal="stagger">
+    {
+      t.workshops.items.map((item) => (
+        <li
+          data-tilt="4"
+          class="group relative flex flex-col rounded-xl border border-white/10 bg-navy-800/80 p-6 shadow-card transition-[border-color,box-shadow] duration-300 hover:border-violet/50 hover:shadow-glow-purple"
+        >
+          <IconBadge name={item.icon} />
+          <h3 class="mt-5 text-lg font-bold text-white">{item.title}</h3>
+          <p class="mt-2 text-sm text-ink-muted">{item.text}</p>
+          <a
+            href={whatsappLink(fill(t.workshops.waMessage, { workshop: item.title }))}
+            target="_blank"
+            rel="noopener"
+            class="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold text-violet after:absolute after:inset-0 after:rounded-xl hover:text-white"
+          >
+            <Icon name="whatsapp" class="size-4" />
+            {t.workshops.ask}
+            <span class="sr-only">: {item.title} {t.a11y.opensInNewTab}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <Fragment slot="cta">
+    <p class="w-full text-lg font-semibold text-white sm:w-auto sm:self-center">{t.workshops.custom}</p>
+    <Button href={whatsappLink(t.workshops.customMessage)} icon="whatsapp" external newTabLabel={t.a11y.opensInNewTab}>
+      {t.workshops.customCta}
+    </Button>
+  </Fragment>
+</Section>

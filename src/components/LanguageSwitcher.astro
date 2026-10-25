@@ -1,0 +1,62 @@
+---
+// Links to the current page in every locale; remembers the choice in localStorage.
+import { LOCALES, type Locale, getDictionary, localizedPath, stripLocale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  /** "compact" = short codes (header), "full" = language names (mobile drawer). */
+  variant?: 'compact' | 'full';
+}
+const { locale, variant = 'compact' } = Astro.props;
+const t = getDictionary(locale);
+const subpath = stripLocale(Astro.url.pathname);
+const SHORT: Record<Locale, string> = { en: 'EN', fr: 'FR', ar: 'ع' };
+---
+
+<nav aria-label={t.a11y.languageSwitcher}>
+  <ul class:list={['flex', variant === 'compact' ? 'gap-1' : 'flex-col gap-2']}>
+    {
+      LOCALES.map((code) => {
+        const current = code === locale;
+        return (
+          <li>
+            <a
+              href={localizedPath(code, subpath)}
+              hreflang={code}
+              lang={code}
+              data-locale-link={code}
+              aria-current={current ? 'true' : undefined}
+              class:list={[
+                'inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-2 text-sm font-semibold transition-colors',
+                current ? 'bg-white/10 text-white' : 'text-ink-muted hover:bg-white/5 hover:text-white',
+                variant === 'full' && 'w-full justify-start px-4 text-base',
+              ]}
+            >
+              {variant === 'compact' ? (
+                <>
+                  {SHORT[code]}
+                  <span class="sr-only"> {t.languages[code]}</span>
+                </>
+              ) : (
+                t.languages[code]
+              )}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>
+
+<script>
+  // Persist the explicit language choice so the root redirect honours it on the next visit.
+  document.addEventListener('click', (event) => {
+    const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('[data-locale-link]');
+    if (!link) return;
+    try {
+      localStorage.setItem('bs-locale', link.dataset.localeLink ?? '');
+    } catch {
+      /* storage unavailable (private mode / blocked): ignore */
+    }
+  });
+</script>
