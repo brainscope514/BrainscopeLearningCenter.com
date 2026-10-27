@@ -6,6 +6,8 @@ import IconBadge from './IconBadge.astro';
 import { type Locale, getDictionary, trialHref } from '@/i18n';
 
 interface Props {
+  /** 'h1' when this is the first section of its page. */
+  headingLevel?: 'h1' | 'h2';
   locale: Locale;
 }
 const t = getDictionary(Astro.props.locale);
@@ -14,7 +16,7 @@ const SUBJECT_ICONS = ['math', 'atom', 'flask', 'dna', 'language', 'language'];
 const STEP_ICONS = ['plan', 'follow', 'review'];
 ---
 
-<Section id="academic" eyebrow={t.academic.eyebrow} title={t.academic.title} intro={t.academic.intro} tone="deep">
+<Section id="academic" headingLevel={Astro.props.headingLevel} eyebrow={t.academic.eyebrow} title={t.academic.title} intro={t.academic.intro} tone="deep">
   <div class="mt-14 grid gap-10 lg:grid-cols-2">
     <div>
       <h3 class="text-xl font-bold text-white" data-reveal>{t.academic.subjectsTitle}</h3>

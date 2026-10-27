@@ -6,12 +6,14 @@ import IconBadge from './IconBadge.astro';
 import { type Locale, getDictionary, trialHref } from '@/i18n';
 
 interface Props {
+  /** 'h1' when this is the first section of its page. */
+  headingLevel?: 'h1' | 'h2';
   locale: Locale;
 }
 const t = getDictionary(Astro.props.locale);
 ---
 
-<Section id="about" eyebrow={t.about.eyebrow} title={t.about.title} intro={t.about.intro} tone="circuit">
+<Section id="about" headingLevel={Astro.props.headingLevel} eyebrow={t.about.eyebrow} title={t.about.title} intro={t.about.intro} tone="circuit">
   <div class="about-pillars relative mt-14" data-about-pillars>
     <!-- Circuit bus: horizontal through the icons on desktop, vertical along the inline-start edge on mobile. -->
     <span class="about-bus" aria-hidden="true" data-about-bus></span>

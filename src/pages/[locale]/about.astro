@@ -1,0 +1,21 @@
+---
+// About page: who we are, what we offer, and the founders.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import About from '@/components/About.astro';
+import Highlights from '@/components/Highlights.astro';
+import Founders from '@/components/Founders.astro';
+import { LOCALES, type Locale, getDictionary } from '@/i18n';
+
+export function getStaticPaths() {
+  return LOCALES.map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getDictionary(locale);
+---
+
+<BaseLayout locale={locale} title={t.nav.about}>
+  <About locale={locale} headingLevel="h1" />
+  <Highlights locale={locale} id="highlights" />
+  <Founders locale={locale} />
+</BaseLayout>

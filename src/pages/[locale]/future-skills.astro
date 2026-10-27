@@ -1,0 +1,19 @@
+---
+// Future Skills page: Robo Kids / Falcon Track / AI & Python tracks and the student pathway to Demo Day.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Tracks from '@/components/Tracks.astro';
+import Pathway from '@/components/Pathway.astro';
+import { LOCALES, type Locale, getDictionary } from '@/i18n';
+
+export function getStaticPaths() {
+  return LOCALES.map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getDictionary(locale);
+---
+
+<BaseLayout locale={locale} title={t.nav.tracks}>
+  <Tracks locale={locale} headingLevel="h1" />
+  <Pathway locale={locale} />
+</BaseLayout>

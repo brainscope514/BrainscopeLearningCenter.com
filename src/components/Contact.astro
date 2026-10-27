@@ -8,6 +8,8 @@ import { type Locale, getDictionary } from '@/i18n';
 import { HOURS, SOCIAL, mapEmbedUrl, mapSearchUrl, telLink, whatsappLink } from '@/data/site';
 
 interface Props {
+  /** 'h1' when this is the first section of its page. */
+  headingLevel?: 'h1' | 'h2';
   locale: Locale;
 }
 const { locale } = Astro.props;
@@ -15,7 +17,7 @@ const t = getDictionary(locale);
 const hours = HOURS?.[locale] ?? null;
 ---
 
-<Section id="contact" eyebrow={t.contact.eyebrow} title={t.contact.title} intro={t.contact.intro} tone="circuit">
+<Section id="contact" headingLevel={Astro.props.headingLevel} eyebrow={t.contact.eyebrow} title={t.contact.title} intro={t.contact.intro} tone="circuit">
   <div class="mt-12 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
     <div class="space-y-6 rounded-xl border border-white/10 bg-navy-800/80 p-7 shadow-card" data-reveal>
       <div class="flex gap-4">

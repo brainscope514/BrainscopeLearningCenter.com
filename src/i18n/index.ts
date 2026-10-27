@@ -50,5 +50,5 @@ export const stripLocale = (pathname: string): string => {
 export const fill = (template: string, vars: Record<string, string>): string =>
   template.replace(/\{(\w+)\}/g, (match, key: string) => vars[key] ?? match);
 
-/** Link to the free-trial form on the localized home page (used by every "Book a free trial" CTA). */
-export const trialHref = (locale: Locale): string => localizedPath(locale, '/#book');
+/** Link to the free-trial page (used by every "Book a free trial" CTA). */
+export const trialHref = (locale: Locale): string => localizedPath(locale, '/book/');

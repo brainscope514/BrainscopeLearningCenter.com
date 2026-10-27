@@ -9,6 +9,8 @@ import { type Locale, getDictionary, fill, trialHref } from '@/i18n';
 import { whatsappLink } from '@/data/site';
 
 interface Props {
+  /** 'h1' when this is the first section of its page. */
+  headingLevel?: 'h1' | 'h2';
   locale: Locale;
 }
 const t = getDictionary(Astro.props.locale);
@@ -16,7 +18,7 @@ const KIND: Record<string, 'badge' | 'rank' | 'milestone'> = { 'robo-kids': 'bad
 const ICON: Record<string, string> = { 'robo-kids': 'robot', falcon: 'leadership', 'ai-python': 'ai' };
 ---
 
-<Section id="tracks" eyebrow={t.tracks.eyebrow} title={t.tracks.title} intro={t.tracks.intro} tone="circuit" class="tracks overflow-hidden">
+<Section id="tracks" headingLevel={Astro.props.headingLevel} eyebrow={t.tracks.eyebrow} title={t.tracks.title} intro={t.tracks.intro} tone="circuit" class="tracks overflow-hidden">
   <div class="tracks__viewport mt-14" data-tracks>
     <ul class="tracks__rail grid gap-6 lg:grid-cols-3" data-tracks-rail>
       {

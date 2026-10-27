@@ -7,6 +7,8 @@ import { type Locale, getDictionary } from '@/i18n';
 import { CONTACT, SOCIAL, telLink, whatsappLink } from '@/data/site';
 
 interface Props {
+  /** 'h1' when this is the first section of its page. */
+  headingLevel?: 'h1' | 'h2';
   locale: Locale;
 }
 const t = getDictionary(Astro.props.locale);
@@ -19,7 +21,7 @@ const label = 'block text-sm font-semibold text-white';
 const error = 'mt-2 text-sm font-medium text-[#ff8fbf]';
 ---
 
-<Section id="book" eyebrow={b.eyebrow} title={b.title} intro={b.intro} tone="circuit">
+<Section id="book" headingLevel={Astro.props.headingLevel} eyebrow={b.eyebrow} title={b.title} intro={b.intro} tone="circuit">
   <div class="mt-12 grid gap-10 lg:grid-cols-[1.4fr_0.6fr]">
     <div class="rounded-2xl border border-violet/30 bg-navy-800/90 p-6 shadow-glow-purple sm:p-8" data-reveal>
       <noscript>

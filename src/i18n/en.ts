@@ -263,6 +263,7 @@ const en = {
     title: 'Questions parents ask',
     intro: 'Can’t find your answer? Ask us directly on WhatsApp.',
     cta: 'Ask your question on WhatsApp',
+    seeAll: 'See all {count} questions',
   },
   contact: {
     eyebrow: 'Visit us',

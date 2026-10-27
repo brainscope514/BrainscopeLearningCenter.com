@@ -9,12 +9,14 @@ import { type Locale, getDictionary, fill } from '@/i18n';
 import { whatsappLink } from '@/data/site';
 
 interface Props {
+  /** 'h1' when this is the first section of its page. */
+  headingLevel?: 'h1' | 'h2';
   locale: Locale;
 }
 const t = getDictionary(Astro.props.locale);
 ---
 
-<Section id="workshops" eyebrow={t.workshops.eyebrow} title={t.workshops.title} intro={t.workshops.intro} tone="deep">
+<Section id="workshops" headingLevel={Astro.props.headingLevel} eyebrow={t.workshops.eyebrow} title={t.workshops.title} intro={t.workshops.intro} tone="deep">
   <ul class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal="stagger">
     {
       t.workshops.items.map((item) => (

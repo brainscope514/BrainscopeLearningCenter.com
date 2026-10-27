@@ -264,6 +264,7 @@ const fr: Dictionary = {
     title: 'Les questions des parents',
     intro: 'Vous ne trouvez pas votre réponse ? Posez-nous la question directement sur WhatsApp.',
     cta: 'Poser ma question sur WhatsApp',
+    seeAll: 'Voir les {count} questions',
   },
   contact: {
     eyebrow: 'Nous rendre visite',

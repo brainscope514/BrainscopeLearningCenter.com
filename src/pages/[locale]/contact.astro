@@ -1,0 +1,17 @@
+---
+// Contact page: phone, WhatsApp, Instagram, address and map.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Contact from '@/components/Contact.astro';
+import { LOCALES, type Locale, getDictionary } from '@/i18n';
+
+export function getStaticPaths() {
+  return LOCALES.map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getDictionary(locale);
+---
+
+<BaseLayout locale={locale} title={t.nav.contact}>
+  <Contact locale={locale} headingLevel="h1" />
+</BaseLayout>

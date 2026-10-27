@@ -266,6 +266,8 @@ const ar: Dictionary = {
     title: 'أسئلة يطرحها الأهل',
     intro: 'لم تجد إجابتك؟ اسألنا مباشرةً على واتساب.',
     cta: 'اطرح سؤالك على واتساب',
+    // NEEDS_NATIVE_REVIEW
+    seeAll: 'عرض جميع الأسئلة ({count})',
   },
   contact: {
     eyebrow: 'زورونا',

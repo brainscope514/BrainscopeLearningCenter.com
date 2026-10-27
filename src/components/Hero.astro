@@ -27,12 +27,12 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
   ></canvas>
 
   <div class="container-brand relative grid items-center gap-6 py-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12 lg:py-24">
-    <div class="max-w-2xl">
+    <div class="hero-copy max-w-2xl" style={`--title-em:${locale === 'ar' ? 6 : 10.6}`}>
       <p class="hero-in text-sm font-semibold tracking-[0.18em] text-violet uppercase" style="--i:0">
         {t.hero.eyebrow}
       </p>
 
-      <h1 class="text-display mt-5 font-bold">
+      <h1 class="hero-title text-display mt-5 font-bold">
         <span class="sr-only">{t.hero.title}</span>
         <span aria-hidden="true">
         {
@@ -44,7 +44,7 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
                 </span>
               </span>
               {i < titleWords.length - 1 && (
-                <span class="hero-in text-electric" style={`--i:${i + 1}`} aria-hidden="true">
+                <span class="hero-sep hero-in text-electric" style={`--i:${i + 1}`} aria-hidden="true">
                   {' • '}
                 </span>
               )}
@@ -89,7 +89,7 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
         src={emblem}
         alt=""
         widths={[128, 256, 384, 512, 640, emblem.width]}
-        sizes="(min-width: 1024px) min(36vw, 32rem), 7.5rem"
+        sizes="(min-width: 1024px) min(36vw, 32rem), (min-width: 640px) 7.5rem, 5.5rem"
         quality={75}
         loading="eager"
         fetchpriority="high"
@@ -138,7 +138,12 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
     }
   }
   .hero__emblem {
-    width: 7.5rem;
+    width: 5.5rem;
+  }
+  @media (min-width: 640px) {
+    .hero__emblem {
+      width: 7.5rem;
+    }
   }
   @media (min-width: 1024px) {
     .hero__emblem {
@@ -151,6 +156,29 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
     background:
       radial-gradient(circle at 66% 38%, rgb(161 102 255 / 0.38), transparent 42%),
       radial-gradient(circle at 46% 52%, rgb(185 195 214 / 0.16), transparent 58%);
+  }
+  /* Headline fix: "Think • Create • Lead" used to wrap as "Think •" / "Create • Lead".
+     ≥640px: always one line, scaled to fit its column (--title-em = headline width in em).
+     <640px: one word per line, separators hidden (the full slogan stays in the sr-only text). */
+  .hero-copy {
+    container-type: inline-size;
+  }
+  .hero-title {
+    white-space: nowrap;
+    font-size: min(var(--text-display), calc(100cqi / var(--title-em, 10.6)));
+  }
+  @media (max-width: 639px) {
+    .hero-title {
+      white-space: normal;
+      font-size: var(--text-display);
+    }
+    .hero-title .hero-mask {
+      display: block;
+      width: fit-content;
+    }
+    .hero-title .hero-sep {
+      display: none;
+    }
   }
   .hero-mask {
     display: inline-block;
@@ -237,13 +265,10 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
 
 <script>
   import { createNeuralCanvas } from '@/lib/neural-canvas';
-  import { gsap, initMotion, prefersReducedMotion, registerMotion } from '@/lib/motion';
+  import { gsap, prefersReducedMotion, registerMotion } from '@/lib/motion';
 
   registerMotion();
-  // Scroll reveals are wired once the main thread is idle (they only affect content below the fold).
-  const startMotion = () => initMotion();
-  if ('requestIdleCallback' in window) requestIdleCallback(startMotion, { timeout: 1200 });
-  else setTimeout(startMotion, 300);
+  // Scroll reveals are started for every page by BaseLayout.
 
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   const canvas = hero?.querySelector<HTMLCanvasElement>('[data-hero-canvas]');

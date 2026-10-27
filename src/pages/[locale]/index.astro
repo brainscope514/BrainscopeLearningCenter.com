@@ -1,23 +1,12 @@
 ---
-// Localized home page: every section in conversion order, ending with the trial form, FAQ and contact.
+// Home page: hero, the four program families (each links to its own page) and a 3-question FAQ preview.
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/Hero.astro';
-import Highlights from '@/components/Highlights.astro';
-import About from '@/components/About.astro';
 import Programs from '@/components/Programs.astro';
-import Tracks from '@/components/Tracks.astro';
-import Academic from '@/components/Academic.astro';
-import University from '@/components/University.astro';
-import Workshops from '@/components/Workshops.astro';
-import Pathway from '@/components/Pathway.astro';
-import Partners from '@/components/Partners.astro';
-import BookTrial from '@/components/BookTrial.astro';
-import Founders from '@/components/Founders.astro';
-import Pricing from '@/components/Pricing.astro';
-import Testimonials from '@/components/Testimonials.astro';
 import Faq from '@/components/Faq.astro';
-import Contact from '@/components/Contact.astro';
 import { LOCALES, type Locale } from '@/i18n';
+import { HOME_FAQ_IDS } from '@/data/faq';
+import { pagePath } from '@/data/nav';
 
 export function getStaticPaths() {
   return LOCALES.map((locale) => ({ params: { locale } }));
@@ -27,20 +16,7 @@ const locale = Astro.params.locale as Locale;
 ---
 
 <BaseLayout locale={locale} preloader>
-  <Hero locale={locale} nextId="highlights" />
-  <Highlights locale={locale} id="highlights" />
-  <About locale={locale} />
+  <Hero locale={locale} nextId="programs" />
   <Programs locale={locale} />
-  <Tracks locale={locale} />
-  <Academic locale={locale} />
-  <University locale={locale} />
-  <Workshops locale={locale} />
-  <Pathway locale={locale} />
-  <Founders locale={locale} />
-  <Partners locale={locale} />
-  <Pricing locale={locale} />
-  <Testimonials locale={locale} />
-  <BookTrial locale={locale} />
-  <Faq locale={locale} />
-  <Contact locale={locale} />
+  <Faq locale={locale} id="faq-top" ids={HOME_FAQ_IDS} seeAllHref={pagePath(locale, 'faq')} tone="navy" />
 </BaseLayout>

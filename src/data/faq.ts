@@ -16,3 +16,6 @@ export interface FaqEntry {
 const FAQ: Record<Locale, FaqEntry[]> = { en, fr, ar };
 
 export const getFaq = (locale: Locale): FaqEntry[] => FAQ[locale];
+
+/** The three questions previewed on the home page; the rest live on the FAQ page. */
+export const HOME_FAQ_IDS = ['ages', 'programs', 'trial'] as const;

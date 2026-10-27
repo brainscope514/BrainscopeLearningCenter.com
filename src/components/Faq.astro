@@ -3,19 +3,28 @@
 // Content comes from src/data/faq.{locale}.json, shared with the chatbot.
 import Section from './Section.astro';
 import Button from './Button.astro';
-import { type Locale, getDictionary } from '@/i18n';
+import { type Locale, fill, getDictionary } from '@/i18n';
 import { getFaq } from '@/data/faq';
 import { whatsappLink } from '@/data/site';
 
 interface Props {
   locale: Locale;
+  /** Section id (the home page uses "faq-top" so /faq/ stays the only "faq"). */
+  id?: string;
+  /** Show only these entries, in this order (home page preview). Default: all entries. */
+  ids?: readonly string[];
+  /** When set, a "See all questions" link to the full FAQ page is shown before the WhatsApp CTA. */
+  seeAllHref?: string;
+  headingLevel?: 'h1' | 'h2';
+  tone?: 'navy' | 'deep' | 'circuit';
 }
-const { locale } = Astro.props;
+const { locale, id = 'faq', ids, seeAllHref, headingLevel, tone = 'deep' } = Astro.props;
 const t = getDictionary(locale);
-const entries = getFaq(locale);
+const all = getFaq(locale);
+const entries = ids ? ids.map((key) => all.find((e) => e.id === key)).filter((e) => e !== undefined) : all;
 ---
 
-<Section id="faq" eyebrow={t.faq.eyebrow} title={t.faq.title} intro={t.faq.intro} tone="deep">
+<Section id={id} eyebrow={t.faq.eyebrow} title={t.faq.title} intro={ids ? undefined : t.faq.intro} tone={tone} headingLevel={headingLevel}>
   <div class="mt-12 max-w-3xl divide-y divide-white/10 border-y border-white/10" data-faq data-reveal>
     {
       entries.map((entry) => (
@@ -23,9 +32,9 @@ const entries = getFaq(locale);
           <h3>
             <button
               type="button"
-              id={`faq-q-${entry.id}`}
+              id={`${id}-q-${entry.id}`}
               aria-expanded="true"
-              aria-controls={`faq-a-${entry.id}`}
+              aria-controls={`${id}-a-${entry.id}`}
               class="faq__q flex w-full items-center justify-between gap-6 py-5 text-start text-lg font-semibold text-white hover:text-violet"
               data-faq-q
             >
@@ -33,7 +42,7 @@ const entries = getFaq(locale);
               <span class="faq__icon relative size-4 shrink-0" aria-hidden="true" />
             </button>
           </h3>
-          <div id={`faq-a-${entry.id}`} role="region" aria-labelledby={`faq-q-${entry.id}`} class="pb-6 text-ink-muted" data-faq-a>
+          <div id={`${id}-a-${entry.id}`} role="region" aria-labelledby={`${id}-q-${entry.id}`} class="pb-6 text-ink-muted" data-faq-a>
             {entry.a}
           </div>
         </div>
@@ -41,7 +50,20 @@ const entries = getFaq(locale);
     }
   </div>
   <Fragment slot="cta">
-    <Button href={whatsappLink(t.whatsapp.general)} icon="whatsapp" external newTabLabel={t.a11y.opensInNewTab}>
+    {
+      seeAllHref && (
+        <Button href={seeAllHref} arrow>
+          {fill(t.faq.seeAll, { count: String(all.length) })}
+        </Button>
+      )
+    }
+    <Button
+      href={whatsappLink(t.whatsapp.general)}
+      icon="whatsapp"
+      variant={seeAllHref ? 'secondary' : undefined}
+      external
+      newTabLabel={t.a11y.opensInNewTab}
+    >
       {t.faq.cta}
     </Button>
   </Fragment>

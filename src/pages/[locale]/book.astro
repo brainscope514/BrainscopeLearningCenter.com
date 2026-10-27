@@ -1,0 +1,21 @@
+---
+// Book page: free-trial form (opens WhatsApp), pricing note, and testimonials once enabled.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BookTrial from '@/components/BookTrial.astro';
+import Pricing from '@/components/Pricing.astro';
+import Testimonials from '@/components/Testimonials.astro';
+import { LOCALES, type Locale, getDictionary } from '@/i18n';
+
+export function getStaticPaths() {
+  return LOCALES.map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getDictionary(locale);
+---
+
+<BaseLayout locale={locale} title={t.nav.book}>
+  <BookTrial locale={locale} headingLevel="h1" />
+  <Pricing locale={locale} />
+  <Testimonials locale={locale} />
+</BaseLayout>

@@ -2,8 +2,8 @@
 // Site footer: brand blurb, contact details, navigation, social links, copyright.
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
-import { type Locale, getDictionary, localizedPath } from '@/i18n';
-import { FOOTER_NAV_ITEMS } from '@/data/nav';
+import { type Locale, getDictionary } from '@/i18n';
+import { FOOTER_NAV_ITEMS, sectionHref } from '@/data/nav';
 import { CONTACT, SOCIAL, SITE, isConfirmed, telLink, whatsappLink } from '@/data/site';
 
 interface Props {
@@ -72,7 +72,7 @@ const linkClass = 'text-ink-muted transition-colors hover:text-white';
           {
             FOOTER_NAV_ITEMS.map((item) => (
               <li>
-                <a href={localizedPath(locale, `/#${item.anchor}`)} class={linkClass}>
+                <a href={sectionHref(locale, item.section)} class={linkClass}>
                   {t.nav[item.key]}
                 </a>
               </li>

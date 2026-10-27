@@ -54,6 +54,8 @@ export async function createChat(opts: ChatOptions) {
   const history: ChatTurn[] = [];
   const waLink = (text: string) => `https://wa.me/${opts.whatsappNumber}?text=${encodeURIComponent(text)}`;
   let lastQuestion = '';
+  /** True once the first bubble of the current answer is on screen. */
+  let answerStarted = true;
 
   // ---- DOM ------------------------------------------------------------------------------------------------
   const panel = el(
@@ -77,7 +79,7 @@ export async function createChat(opts: ChatOptions) {
     '<svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.3 5.71 12 12.01l-6.3-6.3-1.41 1.41 6.3 6.3-6.3 6.3 1.41 1.41 6.3-6.3 6.3 6.3 1.41-1.41-6.3-6.3 6.3-6.3-1.41-1.41Z"/></svg>';
   header.append(titles, closeBtn);
 
-  const log = el('div', 'flex-1 space-y-3 overflow-y-auto p-4');
+  const log = el('div', 'relative min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4');
   log.setAttribute('role', 'log');
   log.setAttribute('aria-live', 'polite');
   // Focusable so keyboard users can scroll the conversation.
@@ -108,8 +110,32 @@ export async function createChat(opts: ChatOptions) {
   panel.append(header, log, chips, form, footer);
   document.body.append(panel);
 
+  // ---- Auto-scroll ---------------------------------------------------------------------------------------
+  // The log scrolls to the newest message automatically. It runs after layout (rAF), because the quick-reply
+  // chips are re-rendered right after each answer and change the log's height. A long answer is aligned to its
+  // first line so the visitor starts reading from the top instead of landing on its last line.
+  let focusTarget: HTMLElement | null = null;
+  const scrollToLatest = (target: HTMLElement | null = focusTarget) => {
+    focusTarget = target;
+    requestAnimationFrame(() => {
+      const behavior: ScrollBehavior = reducedMotion() ? 'auto' : 'smooth';
+      const bottom = log.scrollHeight - log.clientHeight;
+      let top = bottom;
+      if (target && target.isConnected) {
+        const start = target.offsetTop - 12;
+        // Answer taller than the visible log: show its beginning.
+        if (log.scrollHeight - start > log.clientHeight) top = Math.min(start, bottom);
+      }
+      log.scrollTo({ top, behavior });
+    });
+  };
+  const scroll = () => scrollToLatest();
+  // Keep the newest message in view when the log resizes (chips change, phone keyboard opens or closes).
+  new ResizeObserver(() => {
+    if (!panel.hidden) scrollToLatest();
+  }).observe(log);
+
   // ---- Rendering helpers -----------------------------------------------------------------------------------
-  const scroll = () => (log.scrollTop = log.scrollHeight);
 
   const bubble = (role: ChatTurn['role'], text: string) => {
     const wrap = el('div', role === 'user' ? 'flex justify-end' : 'flex justify-start');
@@ -123,7 +149,12 @@ export async function createChat(opts: ChatOptions) {
     b.dir = 'auto';
     wrap.append(b);
     log.append(wrap);
-    scroll();
+    // A new question resets the scroll target; an answer's first bubble becomes the target.
+    if (role === 'user') scrollToLatest(wrap);
+    else if (!answerStarted) {
+      answerStarted = true;
+      scrollToLatest(wrap);
+    } else scroll();
     return b;
   };
 
@@ -162,7 +193,7 @@ export async function createChat(opts: ChatOptions) {
     for (let i = 0; i < 3; i++) dots.append(el('span', 'size-1.5 rounded-full bg-violet'));
     wrap.append(dots);
     log.append(wrap);
-    scroll();
+    scrollToLatest(null);
     await new Promise((r) => setTimeout(r, reducedMotion() ? 200 : 550));
     wrap.remove();
   };
@@ -184,6 +215,8 @@ export async function createChat(opts: ChatOptions) {
       bubble('assistant', s.notSure);
       setChips(reply.suggestions?.length ? reply.suggestions : s.quickReplies.slice(0, 4));
     }
+    // Chips just changed the layout: scroll again once it settles.
+    scroll();
   };
 
   async function ask(text: string, faqId?: string) {
@@ -193,6 +226,7 @@ export async function createChat(opts: ChatOptions) {
     bubble('user', question);
     history.push({ role: 'user', text: question });
     chips.replaceChildren();
+    answerStarted = false;
     const reply = faqId ? faq.answer(faqId) : null;
     const [result] = await Promise.all([reply ? Promise.resolve(reply) : provider.reply(question, history, opts.locale), typing()]);
     render(result);
@@ -214,7 +248,8 @@ export async function createChat(opts: ChatOptions) {
   const open = () => {
     panel.hidden = false;
     launcher.setAttribute('aria-expanded', 'true');
-    input.focus();
+    input.focus({ preventScroll: true });
+    scrollToLatest();
   };
   closeBtn.addEventListener('click', close);
   panel.addEventListener('keydown', (e) => {

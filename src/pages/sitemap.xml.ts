@@ -1,9 +1,10 @@
 // sitemap.xml with hreflang alternates for every localized page (generated at build time, no extra dependency).
 import type { APIRoute } from 'astro';
 import { LOCALES, LOCALE_TAGS, localizedPath } from '@/i18n';
+import { PAGES as SLUGS } from '@/data/nav';
 
-/** Locale-agnostic page paths to list (add new pages here). */
-const PAGES = ['/'];
+/** Locale-agnostic page paths to list (from the site map in src/data/nav.ts). */
+const PAGES = SLUGS.map((slug) => (slug ? `/${slug}/` : '/'));
 
 export const GET: APIRoute = ({ site }) => {
   const abs = (path: string) => new URL(path, site).href;

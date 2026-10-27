@@ -10,8 +10,11 @@ interface Props {
   /** Center the heading block (default: start-aligned). */
   center?: boolean;
   class?: string;
+  /** Heading level: 'h1' for the first section of an inner page (one h1 per page), 'h2' otherwise. */
+  headingLevel?: 'h1' | 'h2';
 }
-const { id, eyebrow, title, intro, tone = 'navy', center = false, class: className } = Astro.props;
+const { id, eyebrow, title, intro, tone = 'navy', center = false, class: className, headingLevel = 'h2' } = Astro.props;
+const Heading = headingLevel;
 ---
 
 <section
@@ -28,7 +31,7 @@ const { id, eyebrow, title, intro, tone = 'navy', center = false, class: classNa
   <div class="container-brand">
     <header class:list={['max-w-3xl', center && 'mx-auto text-center']}>
       <p class="text-sm font-semibold tracking-[0.18em] text-violet uppercase" data-reveal>{eyebrow}</p>
-      <h2 id={`${id}-title`} class="mt-4 text-3xl font-bold text-white lg:text-4xl" data-reveal="lines">{title}</h2>
+      <Heading id={`${id}-title`} class="mt-4 text-3xl font-bold text-white lg:text-4xl" data-reveal="lines">{title}</Heading>
       {intro && <p class="mt-5 text-lg text-ink-muted" data-reveal data-reveal-delay="0.1">{intro}</p>}
     </header>
     <slot />

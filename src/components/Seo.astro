@@ -53,6 +53,7 @@ const jsonLd = {
   sameAs,
 };
 const isHome = subpath === '/';
+const isFaq = subpath.replace(/\/$/, '') === '/faq';
 const graph: object[] = [jsonLd];
 if (isHome && !noindex) {
   graph.push({
@@ -63,6 +64,8 @@ if (isHome && !noindex) {
     inLanguage: LOCALE_TAGS[locale].hreflang,
     publisher: { '@id': `${abs(withBase('/'))}#organization` },
   });
+}
+if (isFaq && !noindex) {
   graph.push({
     '@type': 'FAQPage',
     inLanguage: LOCALE_TAGS[locale].hreflang,

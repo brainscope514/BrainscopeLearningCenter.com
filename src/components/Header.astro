@@ -3,15 +3,21 @@
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import LanguageSwitcher from './LanguageSwitcher.astro';
-import { type Locale, getDictionary, localizedPath, trialHref } from '@/i18n';
-import { NAV_ITEMS } from '@/data/nav';
+import { type Locale, getDictionary, localizedPath, stripLocale, trialHref } from '@/i18n';
+import { NAV_ITEMS, sectionHref, sectionPage } from '@/data/nav';
 
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
 const t = getDictionary(locale);
-const items = NAV_ITEMS.map((item) => ({ label: t.nav[item.key], href: localizedPath(locale, `/#${item.anchor}`) }));
+// Current page slug ('' = home) so the matching nav item gets aria-current="page".
+const current = stripLocale(Astro.url.pathname).replace(/^\/|\/$/g, '');
+const items = NAV_ITEMS.map((item) => ({
+  label: t.nav[item.key],
+  href: sectionHref(locale, item.section),
+  active: item.section !== 'programs' && sectionPage(item.section) === current,
+}));
 const trial = trialHref(locale);
 ---
 
@@ -29,7 +35,8 @@ const trial = trialHref(locale);
             <li>
               <a
                 href={item.href}
-                class="rounded-md px-2 py-2 text-[0.8125rem] font-medium whitespace-nowrap 2xl:px-3 2xl:text-sm text-ink-muted transition-colors hover:text-white"
+                aria-current={item.active ? 'page' : undefined}
+                class="nav-link rounded-md px-2 py-2 text-[0.8125rem] font-medium whitespace-nowrap 2xl:px-3 2xl:text-sm text-ink-muted transition-colors hover:text-white"
               >
                 {item.label}
               </a>
@@ -66,7 +73,7 @@ const trial = trialHref(locale);
     aria-label={t.a11y.mainNav}
     class="mobile-drawer m-0 ms-auto h-dvh max-h-none w-[min(22rem,88vw)] max-w-none bg-navy-900 p-0 text-white backdrop:bg-black/60"
   >
-    <div class="flex h-full flex-col gap-6 p-6">
+    <div class="flex min-h-full flex-col gap-6 p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       <div class="flex items-center justify-between">
         <Logo markOnly />
         <button
@@ -85,8 +92,9 @@ const trial = trialHref(locale);
               <li>
                 <a
                   href={item.href}
+                  aria-current={item.active ? 'page' : undefined}
                   data-menu-link
-                  class="block rounded-md px-4 py-3 text-lg font-semibold hover:bg-white/5"
+                  class="nav-link block rounded-md px-4 py-3 text-lg font-semibold hover:bg-white/5"
                 >
                   {item.label}
                 </a>
@@ -109,10 +117,25 @@ const trial = trialHref(locale);
 </header>
 
 <style>
-  /* Drawer slides in from the inline-end edge (right in LTR, left in RTL). */
+  /* Drawer slides in from the inline-end edge (right in LTR, left in RTL). Pinned to the viewport and
+     scrollable inside, so short phones (and landscape) can reach every link. */
   .mobile-drawer {
+    position: fixed;
+    inset-block: 0;
     inset-inline-start: auto;
     inset-inline-end: 0;
+    height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  /* Page behind the open drawer does not scroll (iOS keeps scrolling the body otherwise). */
+  :global(html.menu-open),
+  :global(html.menu-open body) {
+    overflow: hidden;
+  }
+  .nav-link[aria-current='page'] {
+    color: var(--color-white, #fff);
+    background: rgb(106 44 255 / 0.18);
   }
   @media (prefers-reduced-motion: no-preference) {
     .mobile-drawer[open] {
@@ -135,24 +158,40 @@ const trial = trialHref(locale);
 </style>
 
 <script>
-  // Mobile drawer: native <dialog> gives focus trapping + Escape-to-close for free.
+  // Mobile drawer: native <dialog> gives focus trapping + Escape-to-close.
+  // Fixes: body scroll is locked while open; tapping a link closes the drawer WITHOUT moving focus back to the
+  // burger (that focus call was cancelling the scroll/navigation on iOS); the drawer closes if the screen grows
+  // past the breakpoint where the full nav is shown.
   const dialog = document.getElementById('mobile-menu') as HTMLDialogElement | null;
   const opener = document.querySelector<HTMLButtonElement>('[data-menu-open]');
   if (dialog && opener) {
-    const close = () => dialog.close();
+    let restoreFocus = true;
+    const root = document.documentElement;
+    const close = (focusOpener = true) => {
+      restoreFocus = focusOpener;
+      if (dialog.open) dialog.close();
+    };
     opener.addEventListener('click', () => {
       dialog.showModal();
+      root.classList.add('menu-open');
       opener.setAttribute('aria-expanded', 'true');
     });
     dialog.addEventListener('close', () => {
+      root.classList.remove('menu-open');
       opener.setAttribute('aria-expanded', 'false');
-      opener.focus();
+      if (restoreFocus) opener.focus({ preventScroll: true });
+      restoreFocus = true;
     });
-    dialog.querySelector('[data-menu-close]')?.addEventListener('click', close);
-    dialog.querySelectorAll('[data-menu-link]').forEach((link) => link.addEventListener('click', close));
+    dialog.querySelector('[data-menu-close]')?.addEventListener('click', () => close());
+    dialog.querySelectorAll('[data-menu-link]').forEach((link) => link.addEventListener('click', () => close(false)));
     // Click on the backdrop closes the drawer.
     dialog.addEventListener('click', (event) => {
       if (event.target === dialog) close();
     });
+    window.matchMedia('(min-width: 80rem)').addEventListener('change', (e) => {
+      if (e.matches) close(false);
+    });
+    // Back/forward cache: never restore a page with the drawer still open.
+    window.addEventListener('pageshow', () => close(false));
   }
 </script>
