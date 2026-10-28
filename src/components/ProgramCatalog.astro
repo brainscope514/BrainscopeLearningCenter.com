@@ -1,0 +1,516 @@
+---
+// Program catalog (Programs page): every program as a card, filterable by audience, each opening a details popup
+// (native <dialog>) that ends with its own CTA. All content is server-rendered, so it is indexable and readable
+// without JS. Deep links: #program-<id> opens a popup, #for-<audience> pre-selects a filter.
+import Section from './Section.astro';
+import IconBadge from './IconBadge.astro';
+import LineIcon from './LineIcon.astro';
+import Icon from './Icon.astro';
+import Insignia from './Insignia.astro';
+import { type Locale, fill, getDictionary, trialHref } from '@/i18n';
+import { whatsappLink } from '@/data/site';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const c = t.catalog;
+
+type Audience = 'kids' | 'school' | 'university' | 'institutions';
+type Kind = 'track' | 'academic' | 'agenda' | 'university' | 'development' | 'workshops' | 'partnerships' | 'soon';
+interface Program {
+  id: string;
+  kind: Kind;
+  icon: string;
+  title: string;
+  summary: string;
+  audience: Audience[];
+  /** Age line shown as the first pill (tracks only). */
+  age?: string;
+  /** Option id in the trial form; when set, the popup offers "Book a free trial" pre-selected. */
+  bookId?: string;
+}
+
+const track = (id: string) => t.tracks.items.find((x) => x.id === id)!;
+const category = (id: string) => t.programs.categories.find((x) => x.id === id)!;
+const chess = t.highlights.items.find((x) => x.icon === 'chess');
+const TRACK_ICON: Record<string, string> = { 'robo-kids': 'robot', falcon: 'build', 'ai-python': 'ai' };
+const TRACK_AUDIENCE: Record<string, Audience[]> = { 'robo-kids': ['kids'], falcon: ['kids'], 'ai-python': ['university'] };
+const INSIGNIA: Record<string, 'badge' | 'rank' | 'milestone'> = { 'robo-kids': 'badge', falcon: 'rank', 'ai-python': 'milestone' };
+
+const programs: Program[] = [
+  ...t.tracks.items.map((tr) => ({
+    id: tr.id,
+    kind: 'track' as const,
+    icon: TRACK_ICON[tr.id] ?? 'robot',
+    title: tr.name,
+    summary: tr.summary,
+    audience: TRACK_AUDIENCE[tr.id] ?? ['kids'],
+    age: `${t.tracks.ageLabel} ${tr.age}`,
+    bookId: tr.id,
+  })),
+  { id: 'academic', kind: 'academic', icon: 'academic', title: category('academic').title, summary: category('academic').text, audience: ['school'], bookId: 'academic' },
+  { id: 'agenda', kind: 'agenda', icon: 'agenda', title: t.academic.agendaTitle, summary: t.academic.agendaText, audience: ['school'], bookId: 'agenda' },
+  { id: 'university', kind: 'university', icon: 'university', title: category('university').title, summary: category('university').text, audience: ['university'] },
+  { id: 'development', kind: 'development', icon: 'leadership', title: category('development').title, summary: category('development').text, audience: ['kids', 'school', 'university'] },
+  { id: 'workshops', kind: 'workshops', icon: 'demo', title: t.workshops.eyebrow, summary: t.workshops.intro, audience: ['institutions', 'school', 'university'] },
+  { id: 'partnerships', kind: 'partnerships', icon: 'development', title: t.partners.eyebrow, summary: t.partners.intro, audience: ['institutions'] },
+  ...(chess ? [{ id: 'chess', kind: 'soon' as const, icon: 'chess', title: chess.title, summary: chess.text, audience: ['kids', 'school'] as Audience[] }] : []),
+];
+
+const FILTERS: (Audience | 'all')[] = ['all', 'kids', 'school', 'university', 'institutions'];
+const pillsFor = (p: Program) => [
+  // Numeric ages only ("Ages 8–12"); "University level" is already covered by the audience pill.
+  ...(p.age && /\d/.test(p.age) ? [p.age] : []),
+  ...(p.audience.length >= 3 && p.kind === 'development' ? [c.audience.all] : p.audience.map((a) => c.audience[a])),
+];
+const askLink = (p: Program) =>
+  p.kind === 'track' ? whatsappLink(fill(t.tracks.waMessage, { track: p.title })) : whatsappLink(fill(c.waMessage, { program: p.title }));
+const card = 'rounded-xl border border-white/10 bg-navy-800/80 shadow-card';
+---
+
+<Section id="programs" headingLevel="h1" eyebrow={c.eyebrow} title={c.title} intro={c.intro} tone="circuit">
+  <div class="mt-8 flex flex-wrap gap-2 sm:mt-10" role="group" aria-label={c.filterLabel} data-program-filters>
+    {
+      FILTERS.map((f) => (
+        <button
+          type="button"
+          data-filter={f}
+          aria-pressed={f === 'all' ? 'true' : 'false'}
+          class="filter-chip min-h-11 rounded-full border border-white/15 px-4 text-sm font-semibold text-ink-muted transition-colors hover:border-violet/60 hover:text-white"
+        >
+          {c.filters[f]}
+        </button>
+      ))
+    }
+  </div>
+
+  <ul class="mt-8 grid gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3" data-program-grid>
+    {
+      programs.map((p) =>
+        p.kind === 'soon' ? (
+          // Coming-soon program: a slim full-width strip so the grid above stays even.
+          <li data-audience={p.audience.join(' ')} class:list={[card, 'flex flex-col gap-3 border-dashed p-4 sm:col-span-2 sm:flex-row sm:items-center sm:gap-5 sm:p-5 lg:col-span-3']}>
+            <IconBadge name={p.icon} class="max-sm:hidden" />
+            <div class="min-w-0 flex-1">
+              <h2 class="flex flex-wrap items-center gap-2 text-lg font-bold text-white">
+                {p.title}
+                <span class="rounded-full border border-magenta/40 bg-magenta/10 px-2.5 py-0.5 text-xs font-semibold text-white">{t.highlights.comingSoon}</span>
+              </h2>
+              <p class="mt-1 text-sm text-ink-muted">{p.summary}</p>
+            </div>
+            <a href={whatsappLink(c.notifyMessage)} target="_blank" rel="noopener" class="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-violet hover:text-white">
+              <Icon name="whatsapp" class="size-4" />
+              {c.notify}
+              <span class="sr-only">{t.a11y.opensInNewTab}</span>
+            </a>
+          </li>
+        ) : (
+          <li
+            data-audience={p.audience.join(' ')}
+            class:list={[card, 'program-card group relative flex flex-col p-4 transition-[border-color,box-shadow] duration-300 hover:border-violet/50 hover:shadow-glow-purple sm:p-6']}
+          >
+            <IconBadge name={p.icon} class="max-sm:hidden" />
+            <h2 class="text-lg font-bold text-white sm:mt-5">{p.title}</h2>
+            <ul class="mt-2 flex flex-wrap gap-1.5" aria-label={c.whoFor}>
+              {pillsFor(p).map((pill) => (
+                <li class="rounded-full bg-white/5 px-2.5 py-0.5 text-xs font-medium text-ink-muted">{pill}</li>
+              ))}
+            </ul>
+            <p class="mt-3 line-clamp-3 text-sm text-ink-muted max-sm:hidden">{p.summary}</p>
+            <button
+              type="button"
+              data-open-program={p.id}
+              aria-haspopup="dialog"
+              class="mt-auto inline-flex items-center gap-2 pt-3 text-start text-sm font-semibold text-white after:absolute after:inset-0 after:rounded-xl hover:text-white sm:pt-5"
+            >
+              {c.details}
+              <span class="sr-only">: {p.title}</span>
+              <svg class="size-4 transition-transform group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+          </li>
+        ),
+      )
+    }
+  </ul>
+  <p class="mt-8 hidden text-ink-muted" data-program-empty>{c.empty}</p>
+</Section>
+
+{
+  programs
+    .filter((p) => p.kind !== 'soon')
+    .map((p) => {
+      const tr = p.kind === 'track' ? track(p.id) : null;
+      return (
+        <dialog id={`program-${p.id}`} class="program-dialog" aria-labelledby={`program-${p.id}-title`}>
+          <div class="flex max-h-[inherit] flex-col">
+            <header class="flex items-start gap-4 border-b border-white/10 p-5 sm:p-6">
+              <IconBadge name={p.icon} />
+              <div class="min-w-0 flex-1">
+                <h2 id={`program-${p.id}-title`} class="text-xl font-bold text-white sm:text-2xl">
+                  {p.title}
+                </h2>
+                <ul class="mt-2 flex flex-wrap gap-1.5" aria-label={c.whoFor}>
+                  {pillsFor(p).map((pill) => (
+                    <li class="rounded-full bg-white/5 px-2.5 py-0.5 text-xs font-medium text-ink-muted">{pill}</li>
+                  ))}
+                </ul>
+              </div>
+              <button type="button" data-close-program class="-m-2 grid size-11 shrink-0 place-items-center rounded-md text-ink-muted hover:bg-white/5 hover:text-white" aria-label={c.close}>
+                <svg class="size-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M5 5l10 10M15 5 5 15" stroke-linecap="round" />
+                </svg>
+              </button>
+            </header>
+
+            <div class="min-h-0 flex-1 space-y-6 overflow-y-auto overscroll-contain p-5 text-ink-muted sm:p-6">
+              {tr && (
+                <>
+                  <p class="text-base text-white/90">{tr.summary}</p>
+                  <dl class="grid gap-3 sm:grid-cols-2">
+                    <div class="rounded-lg bg-white/5 p-4">
+                      <dt class="text-xs font-semibold tracking-wide text-violet uppercase">{t.tracks.ageLabel}</dt>
+                      <dd class="mt-1 font-semibold text-white">{tr.age}</dd>
+                    </div>
+                    <div class="rounded-lg bg-white/5 p-4">
+                      <dt class="text-xs font-semibold tracking-wide text-violet uppercase">{t.tracks.toolsLabel}</dt>
+                      <dd class="mt-1 font-semibold text-white">{tr.tools}</dd>
+                    </div>
+                  </dl>
+                  <div>
+                    <h3 class="font-semibold text-white">{t.tracks.buildsLabel}</h3>
+                    <ul class="mt-3 space-y-2 text-sm">
+                      {tr.builds.map((b) => (
+                        <li class="flex gap-2">
+                          <LineIcon name="check" class="mt-0.5 size-4 shrink-0 text-electric" />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-white">{t.tracks.progressionLabel}</h3>
+                    <p class="mt-1 text-sm">{tr.progression}</p>
+                    <div class="mt-4">
+                      <Insignia kind={INSIGNIA[tr.id] ?? 'milestone'} levels={tr.levels} />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {(p.kind === 'academic' || p.kind === 'agenda') && (
+                <>
+                  <p class="text-base text-white/90">{p.kind === 'academic' ? t.academic.intro : t.academic.agendaText}</p>
+                  {p.kind === 'academic' && (
+                    <div>
+                      <h3 class="font-semibold text-white">{t.academic.subjectsTitle}</h3>
+                      <ul class="mt-3 flex flex-wrap gap-2">
+                        {t.academic.subjects.map((s) => (
+                          <li class="rounded-full border border-white/15 px-3 py-1 text-sm text-white">{s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <div>
+                    <h3 class="font-semibold text-white">{t.academic.reviewTitle}</h3>
+                    <ol class="mt-3 space-y-3">
+                      {t.academic.reviewSteps.map((step, i) => (
+                        <li class="flex gap-3">
+                          <span class="grid size-7 shrink-0 place-items-center rounded-full bg-purple/20 text-sm font-bold text-white">{i + 1}</span>
+                          <span class="text-sm">
+                            <strong class="font-semibold text-white">{step.title}.</strong> {step.text}
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                </>
+              )}
+
+              {p.kind === 'university' && (
+                <>
+                  <p class="text-base text-white/90">{t.university.intro}</p>
+                  <div>
+                    <h3 class="font-semibold text-white">{c.fieldsTitle}</h3>
+                    <ul class="mt-3 grid gap-2 sm:grid-cols-2">
+                      {t.university.fields.map((f) => (
+                        <li>
+                          <a
+                            href={whatsappLink(fill(t.university.waMessage, { field: f.title }))}
+                            target="_blank"
+                            rel="noopener"
+                            class="flex h-full flex-col rounded-lg bg-white/5 p-3 transition-colors hover:bg-white/10"
+                          >
+                            <span class="font-semibold text-white">{f.title}</span>
+                            <span class="mt-0.5 text-sm">{f.text}</span>
+                            <span class="sr-only">{t.a11y.opensInNewTab}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
+              )}
+
+              {p.kind === 'development' && (
+                <>
+                  <p class="text-base text-white/90">{p.summary}</p>
+                  <div>
+                    <h3 class="font-semibold text-white">{c.includes}</h3>
+                    <ul class="mt-3 space-y-2 text-sm">
+                      {category('development').items.map((item) => (
+                        <li class="flex gap-2">
+                          <LineIcon name="check" class="mt-0.5 size-4 shrink-0 text-electric" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
+              )}
+
+              {p.kind === 'partnerships' && (
+                <>
+                  <p class="text-base text-white/90">{t.partners.intro}</p>
+                  <div>
+                    <h3 class="font-semibold text-white">{t.partners.offerTitle}</h3>
+                    <ul class="mt-3 grid gap-2 sm:grid-cols-2">
+                      {t.partners.offers.map((o) => (
+                        <li class="rounded-lg bg-white/5 p-3">
+                          <span class="block font-semibold text-white">{o.title}</span>
+                          <span class="mt-0.5 block text-sm">{o.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
+              )}
+
+              {p.kind === 'workshops' && (
+                <>
+                  <p class="text-base text-white/90">{t.workshops.intro}</p>
+                  <div>
+                    <h3 class="font-semibold text-white">{c.workshopsTitle}</h3>
+                    <ul class="mt-3 grid gap-2 sm:grid-cols-2">
+                      {t.workshops.items.map((w) => (
+                        <li>
+                          <a
+                            href={whatsappLink(fill(t.workshops.waMessage, { workshop: w.title }))}
+                            target="_blank"
+                            rel="noopener"
+                            class="flex h-full flex-col rounded-lg bg-white/5 p-3 transition-colors hover:bg-white/10"
+                          >
+                            <span class="font-semibold text-white">{w.title}</span>
+                            <span class="mt-0.5 text-sm">{w.text}</span>
+                            <span class="sr-only">{t.a11y.opensInNewTab}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <footer class="flex flex-wrap gap-3 border-t border-white/10 p-5 sm:p-6">
+              {p.bookId && (
+                <a href={`${trialHref(locale)}?program=${p.bookId}`} class="btn-primary">
+                  {t.cta.bookTrial}
+                </a>
+              )}
+              {p.kind === 'partnerships' ? (
+                <a href={whatsappLink(t.partners.waMessage)} target="_blank" rel="noopener" class="btn-primary">
+                  <Icon name="whatsapp" class="size-4" />
+                  {t.partners.cta}
+                  <span class="sr-only">{t.a11y.opensInNewTab}</span>
+                </a>
+              ) : p.kind === 'workshops' ? (
+                <a href={whatsappLink(t.workshops.customMessage)} target="_blank" rel="noopener" class:list={[p.bookId ? 'btn-secondary' : 'btn-primary']}>
+                  <Icon name="whatsapp" class="size-4" />
+                  {t.workshops.customCta}
+                  <span class="sr-only">{t.a11y.opensInNewTab}</span>
+                </a>
+              ) : (
+                <a href={askLink(p)} target="_blank" rel="noopener" class:list={[p.bookId ? 'btn-secondary' : 'btn-primary']}>
+                  <Icon name="whatsapp" class="size-4" />
+                  {c.ask}
+                  <span class="sr-only">{t.a11y.opensInNewTab}</span>
+                </a>
+              )}
+            </footer>
+          </div>
+        </dialog>
+      );
+    })
+}
+
+<style>
+  .filter-chip[aria-pressed='true'] {
+    border-color: var(--color-purple, #6a2cff);
+    background: var(--color-purple, #6a2cff);
+    color: #fff;
+  }
+  [data-program-grid] > li[hidden] {
+    display: none !important;
+  }
+
+  /* Popup: centered card on desktop, bottom sheet on phones. Scrolls inside, never the page behind. */
+  .program-dialog {
+    margin: auto;
+    width: min(42rem, calc(100vw - 2rem));
+    max-height: min(85dvh, 48rem);
+    padding: 0;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: var(--radius-xl, 1.75rem);
+    background: var(--color-navy-900, #0b1a33);
+    color: inherit;
+    box-shadow: 0 30px 80px rgb(0 0 0 / 0.55);
+    overflow: hidden;
+  }
+  .program-dialog:focus,
+  .program-dialog:focus-visible {
+    outline: none;
+  }
+  .program-dialog::backdrop {
+    background: rgb(4 12 26 / 0.72);
+    backdrop-filter: blur(4px);
+  }
+  @media (max-width: 639px) {
+    .program-dialog {
+      margin: auto 0 0;
+      width: 100vw;
+      max-width: 100vw;
+      max-height: 88dvh;
+      border-radius: 1.25rem 1.25rem 0 0;
+      border-bottom: 0;
+    }
+    .program-dialog footer {
+      padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .program-dialog[open] {
+      animation: program-in 0.22s ease-out;
+    }
+    .program-dialog[open]::backdrop {
+      animation: program-fade 0.22s ease-out;
+    }
+  }
+  @keyframes program-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.98);
+    }
+  }
+  @keyframes program-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  :global(html.program-open),
+  :global(html.program-open body) {
+    overflow: hidden;
+  }
+
+  /* Popup buttons (same look as <Button>, but plain anchors so they can carry ?program=). */
+  .btn-primary,
+  .btn-secondary {
+    display: inline-flex;
+    min-height: 2.875rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0 1.5rem;
+    font-weight: 600;
+    color: #fff;
+    transition:
+      background-color 0.2s,
+      border-color 0.2s;
+  }
+  .btn-primary {
+    background: var(--color-purple, #6a2cff);
+  }
+  .btn-primary:hover {
+    background: var(--color-purple-400, #8a5cff);
+  }
+  .btn-secondary {
+    border: 1px solid rgb(255 255 255 / 0.25);
+    background: rgb(255 255 255 / 0.05);
+  }
+  .btn-secondary:hover {
+    border-color: var(--color-violet, #a166ff);
+  }
+  @media (max-width: 639px) {
+    .btn-primary,
+    .btn-secondary {
+      flex: 1 1 100%;
+    }
+  }
+</style>
+
+<script>
+  // Filters + popups. Popups are native <dialog>s (focus trap, Escape). The URL hash mirrors the open popup so it
+  // can be shared, and arriving with #program-<id> or #for-<audience> opens/filters directly.
+  const filters = document.querySelector<HTMLElement>('[data-program-filters]');
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-program-grid] > li')];
+  const empty = document.querySelector<HTMLElement>('[data-program-empty]');
+  const root = document.documentElement;
+
+  const applyFilter = (value: string) => {
+    filters?.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === value)));
+    let shown = 0;
+    cards.forEach((card) => {
+      const match = value === 'all' || (card.dataset.audience ?? '').split(' ').includes(value);
+      card.hidden = !match;
+      if (match) shown++;
+    });
+    if (empty) empty.hidden = shown > 0;
+    empty?.classList.toggle('hidden', shown > 0);
+  };
+  filters?.addEventListener('click', (event) => {
+    const button = (event.target as Element).closest<HTMLButtonElement>('[data-filter]');
+    if (button) applyFilter(button.dataset.filter ?? 'all');
+  });
+
+  let opener: HTMLElement | null = null;
+  const setHash = (hash: string) => history.replaceState(null, '', hash ? `#${hash}` : location.pathname + location.search);
+  const openProgram = (id: string, from: HTMLElement | null = null) => {
+    const dialog = document.getElementById(`program-${id}`) as HTMLDialogElement | null;
+    if (!dialog || dialog.open) return;
+    opener = from;
+    dialog.showModal();
+    dialog.querySelector<HTMLElement>('.overflow-y-auto')?.scrollTo(0, 0);
+    root.classList.add('program-open');
+    setHash(`program-${id}`);
+  };
+  document.querySelectorAll<HTMLDialogElement>('.program-dialog').forEach((dialog) => {
+    dialog.addEventListener('close', () => {
+      root.classList.remove('program-open');
+      setHash('');
+      opener?.focus({ preventScroll: true });
+      opener = null;
+    });
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog.querySelector('[data-close-program]')?.addEventListener('click', () => dialog.close());
+  });
+  document.querySelectorAll<HTMLButtonElement>('[data-open-program]').forEach((button) =>
+    button.addEventListener('click', () => openProgram(button.dataset.openProgram ?? '', button)),
+  );
+
+  const fromHash = () => {
+    const hash = decodeURIComponent(location.hash.slice(1));
+    if (hash.startsWith('program-')) openProgram(hash.slice('program-'.length));
+    else if (hash.startsWith('for-')) {
+      applyFilter(hash.slice('for-'.length));
+      filters?.scrollIntoView({ block: 'center' });
+    }
+  };
+  fromHash();
+  window.addEventListener('hashchange', fromHash);
+</script>

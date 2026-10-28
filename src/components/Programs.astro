@@ -1,12 +1,11 @@
 ---
-// Programs: four category cards (tilt + glow on hover) linking to their own page, or WhatsApp for Development.
+// Programs (home): four category cards (tilt + glow on hover) linking into the Programs page.
 import Section from './Section.astro';
 import Button from './Button.astro';
 import IconBadge from './IconBadge.astro';
 import LineIcon from './LineIcon.astro';
 import { type Locale, getDictionary, trialHref } from '@/i18n';
-import { whatsappLink } from '@/data/site';
-import { sectionHref } from '@/data/nav';
+import { pagePath, sectionHref } from '@/data/nav';
 
 interface Props {
   locale: Locale;
@@ -19,8 +18,8 @@ const ICONS: Record<string, string> = { academic: 'academic', tracks: 'robot', u
   <ul class="mt-14 grid gap-6 sm:grid-cols-2 xl:grid-cols-4" data-reveal="stagger">
     {
       t.programs.categories.map((cat) => {
-        // Development has no subsection, so its card opens WhatsApp with a message naming the program.
-        const link = cat.id === 'development' ? { href: whatsappLink(`${t.whatsapp.general} (${cat.title})`), external: true } : { href: sectionHref(Astro.props.locale, cat.id), external: false };
+        // Each card opens its program on the Programs page (popup or audience filter).
+        const link = { href: sectionHref(Astro.props.locale, cat.id), external: false };
         return (
           <li data-tilt="5" class="program-card group relative flex flex-col rounded-xl border border-white/10 bg-navy-800/80 p-7 shadow-card transition-[border-color,box-shadow] duration-300 hover:border-violet/50 hover:shadow-glow-purple">
             <IconBadge name={ICONS[cat.id] ?? 'more'} />
@@ -38,7 +37,7 @@ const ICONS: Record<string, string> = { academic: 'academic', tracks: 'robot', u
               href={link.href}
               target={link.external ? '_blank' : undefined}
               rel={link.external ? 'noopener' : undefined}
-              class="mt-auto inline-flex items-center gap-2 pt-6 font-semibold text-violet after:absolute after:inset-0 after:rounded-xl hover:text-white"
+              class="mt-auto inline-flex items-center gap-2 pt-6 font-semibold text-white after:absolute after:inset-0 after:rounded-xl hover:text-white"
             >
               {link.external ? t.programs.ask : t.programs.explore}
               <span class="sr-only">: {cat.title}{link.external && ` ${t.a11y.opensInNewTab}`}</span>
@@ -52,7 +51,10 @@ const ICONS: Record<string, string> = { academic: 'academic', tracks: 'robot', u
     }
   </ul>
   <Fragment slot="cta">
-    <Button href={trialHref(Astro.props.locale)} arrow>
+    <Button href={pagePath(Astro.props.locale, 'programs')} arrow>
+      {t.catalog.title}
+    </Button>
+    <Button href={trialHref(Astro.props.locale)} variant="secondary">
       {t.cta.bookTrial}
     </Button>
   </Fragment>

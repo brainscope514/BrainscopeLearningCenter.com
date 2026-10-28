@@ -1,7 +1,7 @@
 ---
-// Future Skills page: Robo Kids / Falcon Track / AI & Python tracks and the student pathway to Demo Day.
+// Programs page: every program as a filterable card with a details popup, then the student pathway.
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Tracks from '@/components/Tracks.astro';
+import ProgramCatalog from '@/components/ProgramCatalog.astro';
 import Pathway from '@/components/Pathway.astro';
 import { LOCALES, type Locale, getDictionary } from '@/i18n';
 
@@ -13,7 +13,7 @@ const locale = Astro.params.locale as Locale;
 const t = getDictionary(locale);
 ---
 
-<BaseLayout locale={locale} title={t.nav.tracks}>
-  <Tracks locale={locale} headingLevel="h1" />
+<BaseLayout locale={locale} title={t.nav.programs}>
+  <ProgramCatalog locale={locale} />
   <Pathway locale={locale} />
 </BaseLayout>

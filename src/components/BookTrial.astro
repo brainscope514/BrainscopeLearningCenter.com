@@ -21,7 +21,7 @@ const label = 'block text-sm font-semibold text-white';
 const error = 'mt-2 text-sm font-medium text-[#ff8fbf]';
 ---
 
-<Section id="book" headingLevel={Astro.props.headingLevel} eyebrow={b.eyebrow} title={b.title} intro={b.intro} tone="circuit">
+<Section id="book" headingLevel={Astro.props.headingLevel} eyebrow={b.eyebrow} title={b.title} intro={b.intro} tone="light">
   <div class="mt-12 grid gap-10 lg:grid-cols-[1.4fr_0.6fr]">
     <div class="rounded-2xl border border-violet/30 bg-navy-800/90 p-6 shadow-glow-purple sm:p-8" data-reveal>
       <noscript>
@@ -137,6 +137,10 @@ const error = 'mt-2 text-sm font-medium text-[#ff8fbf]';
     const success = form.parentElement!.querySelector<HTMLElement>('[data-book-success]')!;
     const retry = success.querySelector<HTMLAnchorElement>('[data-book-retry]');
     let submitted = false;
+    // Pre-select the program when arriving from a program popup (/book/?program=falcon).
+    const wanted = new URLSearchParams(location.search).get('program');
+    const programSelect = form.querySelector<HTMLSelectElement>('#book-program');
+    if (wanted && programSelect && [...programSelect.options].some((o) => o.value === wanted)) programSelect.value = wanted;
 
     const labelOf = (name: string) => {
       const el = form.elements.namedItem(name);

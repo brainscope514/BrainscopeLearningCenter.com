@@ -4,49 +4,90 @@ import { LOCALES, type Locale, getDictionary, localizedPath, stripLocale } from 
 
 interface Props {
   locale: Locale;
-  /** "compact" = short codes (header), "full" = language names (mobile drawer). */
+  /** "compact" = globe dropdown (header), "full" = list of language names (mobile drawer). */
   variant?: 'compact' | 'full';
 }
 const { locale, variant = 'compact' } = Astro.props;
 const t = getDictionary(locale);
 const subpath = stripLocale(Astro.url.pathname);
-const SHORT: Record<Locale, string> = { en: 'EN', fr: 'FR', ar: 'ع' };
+const SHORT: Record<Locale, string> = { en: 'EN', fr: 'FR', ar: 'AR' };
 ---
 
-<nav aria-label={t.a11y.languageSwitcher}>
-  <ul class:list={['flex', variant === 'compact' ? 'gap-1' : 'flex-col gap-2']}>
-    {
-      LOCALES.map((code) => {
-        const current = code === locale;
-        return (
-          <li>
-            <a
-              href={localizedPath(code, subpath)}
-              hreflang={code}
-              lang={code}
-              data-locale-link={code}
-              aria-current={current ? 'true' : undefined}
-              class:list={[
-                'inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-2 text-sm font-semibold transition-colors',
-                current ? 'bg-white/10 text-white' : 'text-ink-muted hover:bg-white/5 hover:text-white',
-                variant === 'full' && 'w-full justify-start px-4 text-base',
-              ]}
-            >
-              {variant === 'compact' ? (
-                <>
-                  {SHORT[code]}
-                  <span class="sr-only"> {t.languages[code]}</span>
-                </>
-              ) : (
-                t.languages[code]
-              )}
-            </a>
-          </li>
-        );
-      })
-    }
-  </ul>
-</nav>
+{
+  variant === 'compact' ? (
+    // Header: globe + current code, opening a small menu with each language in its own script.
+    // <details> works without JS; the script below adds outside-click and Escape to close.
+    <details class="lang-menu relative" data-lang-menu>
+      <summary
+        class="inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 rounded-md px-3 text-sm font-semibold text-white transition-colors hover:bg-white/5 [&::-webkit-details-marker]:hidden"
+        aria-label={`${t.a11y.languageSwitcher}: ${t.languages[locale]}`}
+      >
+        <svg class="size-4 text-ink-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3Z" stroke-linejoin="round" />
+        </svg>
+        {SHORT[locale]}
+        <svg class="lang-menu__chevron size-3.5 text-ink-muted transition-transform" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="m4 6 4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </summary>
+      <nav aria-label={t.a11y.languageSwitcher} class="absolute end-0 top-full z-50 mt-2 w-44 rounded-lg border border-white/10 bg-navy-900 p-1.5 shadow-card">
+        <ul>
+          {LOCALES.map((code) => {
+            const current = code === locale;
+            return (
+              <li>
+                <a
+                  href={localizedPath(code, subpath)}
+                  hreflang={code}
+                  lang={code}
+                  data-locale-link={code}
+                  aria-current={current ? 'true' : undefined}
+                  class:list={[
+                    'flex min-h-11 items-center justify-between gap-3 rounded-md px-3 text-sm font-medium transition-colors',
+                    current ? 'bg-white/10 text-white' : 'text-ink-muted hover:bg-white/5 hover:text-white',
+                  ]}
+                >
+                  {t.languages[code]}
+                  {current && (
+                    <svg class="size-4 text-electric" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="m3.5 8.5 3 3 6-7" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  )}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </details>
+  ) : (
+    <nav aria-label={t.a11y.languageSwitcher}>
+      <ul class="flex flex-col gap-2">
+        {LOCALES.map((code) => {
+          const current = code === locale;
+          return (
+            <li>
+              <a
+                href={localizedPath(code, subpath)}
+                hreflang={code}
+                lang={code}
+                data-locale-link={code}
+                aria-current={current ? 'true' : undefined}
+                class:list={[
+                  'inline-flex min-h-11 w-full items-center justify-start rounded-md px-4 text-base font-semibold transition-colors',
+                  current ? 'bg-white/10 text-white' : 'text-ink-muted hover:bg-white/5 hover:text-white',
+                ]}
+              >
+                {t.languages[code]}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  )
+}
 
 <script>
   // Persist the explicit language choice so the root redirect honours it on the next visit.
@@ -59,4 +100,37 @@ const SHORT: Record<Locale, string> = { en: 'EN', fr: 'FR', ar: 'ع' };
       /* storage unavailable (private mode / blocked): ignore */
     }
   });
+  // Header dropdown: close on outside click and on Escape (focus returns to the toggle).
+  document.addEventListener('click', (event) => {
+    document.querySelectorAll<HTMLDetailsElement>('[data-lang-menu][open]').forEach((menu) => {
+      if (!menu.contains(event.target as Node)) menu.open = false;
+    });
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    document.querySelectorAll<HTMLDetailsElement>('[data-lang-menu][open]').forEach((menu) => {
+      menu.open = false;
+      menu.querySelector('summary')?.focus();
+    });
+  });
 </script>
+
+<style>
+  .lang-menu[open] .lang-menu__chevron {
+    transform: rotate(180deg);
+  }
+  .lang-menu[open] nav {
+    animation: lang-in 0.16s ease-out;
+  }
+  @keyframes lang-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lang-menu[open] nav {
+      animation: none;
+    }
+  }
+</style>

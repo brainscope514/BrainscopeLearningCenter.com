@@ -6,7 +6,7 @@ interface Props {
   title: string;
   intro?: string;
   /** Background treatment: plain navy, deeper navy, or the circuit-board brand pattern. */
-  tone?: 'navy' | 'deep' | 'circuit';
+  tone?: 'navy' | 'deep' | 'circuit' | 'light';
   /** Center the heading block (default: start-aligned). */
   center?: boolean;
   class?: string;
@@ -25,12 +25,13 @@ const Heading = headingLevel;
     tone === 'deep' && 'bg-navy-900',
     tone === 'circuit' && 'bg-circuit',
     tone === 'navy' && 'bg-navy',
+    tone === 'light' && 'tone-light',
     className,
   ]}
 >
   <div class="container-brand">
     <header class:list={['max-w-3xl', center && 'mx-auto text-center']}>
-      <p class="text-sm font-semibold tracking-[0.18em] text-violet uppercase" data-reveal>{eyebrow}</p>
+      <p class="text-sm font-semibold tracking-[0.18em] text-electric uppercase" data-reveal>{eyebrow}</p>
       <Heading id={`${id}-title`} class="mt-4 text-3xl font-bold text-white lg:text-4xl" data-reveal="lines">{title}</Heading>
       {intro && <p class="mt-5 text-lg text-ink-muted" data-reveal data-reveal-delay="0.1">{intro}</p>}
     </header>

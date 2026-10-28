@@ -1,0 +1,27 @@
+---
+// Redirects for pages merged into /programs/ (future-skills, academic, workshops): keeps old shared links working.
+import { LOCALES, type Locale, localizedPath } from '@/i18n';
+import { REDIRECTS } from '@/data/nav';
+
+export function getStaticPaths() {
+  return LOCALES.flatMap((locale) => Object.keys(REDIRECTS).map((old) => ({ params: { locale, old } })));
+}
+
+const locale = Astro.params.locale as Locale;
+const [page, hash] = (REDIRECTS[Astro.params.old as string] ?? 'programs').split('#');
+const target = `${localizedPath(locale, `/${page}/`)}${hash ? `#${hash}` : ''}`;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <link rel="canonical" href={target} />
+    <title>Brainscope</title>
+  </head>
+  <body>
+    <a href={target}>{target}</a>
+  </body>
+</html>

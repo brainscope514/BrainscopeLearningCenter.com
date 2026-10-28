@@ -18,5 +18,5 @@ const locale = Astro.params.locale as Locale;
 <BaseLayout locale={locale} preloader>
   <Hero locale={locale} nextId="programs" />
   <Programs locale={locale} />
-  <Faq locale={locale} id="faq-top" ids={HOME_FAQ_IDS} seeAllHref={pagePath(locale, 'faq')} tone="navy" />
+  <Faq locale={locale} id="faq-top" ids={HOME_FAQ_IDS} seeAllHref={pagePath(locale, 'faq')} tone="light" />
 </BaseLayout>

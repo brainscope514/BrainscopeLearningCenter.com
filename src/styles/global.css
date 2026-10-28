@@ -35,7 +35,7 @@
   --color-white: #ffffff;
   /* Text on navy: meets WCAG AA (≥ 4.5:1) */
   --color-ink: #ffffff;
-  --color-ink-muted: #b9c3d6;
+  --color-ink-muted: #cdd5e3;
 
   /* Typography */
   --font-sans: 'Montserrat', 'Montserrat Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial,
@@ -154,4 +154,30 @@ html:lang(ar) {
 
 @utility glow-text {
   text-shadow: 0 0 24px rgb(161 102 255 / 0.55);
+}
+
+/* Light section: re-maps the theme colours so existing components (text-white, border-white/10, …) read as
+   navy on soft lavender without per-component changes. Primary buttons keep white text. */
+.tone-light {
+  --color-white: #081d3a;
+  --color-ink: #081d3a;
+  --color-ink-muted: #3d4863;
+  --color-violet: #5a1fe0;
+  --color-electric: #5a1fe0;
+  /* Dark surfaces inside a light section become white cards with lavender borders. */
+  --color-navy: #ffffff;
+  --color-navy-800: #ffffff;
+  --color-navy-900: #ffffff;
+  --color-navy-700: #ece7ff;
+  --color-navy-600: #ddd4ff;
+  background: #f5f2ff;
+  color: #081d3a;
+  /* Native form controls (radios, selects) render in their light variant here. */
+  color-scheme: light;
+}
+.tone-light .bg-purple {
+  color: #fff;
+}
+.tone-light .shadow-card {
+  box-shadow: 0 10px 30px rgb(8 29 58 / 0.08);
 }

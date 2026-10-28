@@ -1,10 +1,11 @@
 ---
-// About page: who we are, what we offer, and the founders.
+// About page: who we are and the founders; partner logos appear here once src/data/partners.ts has entries.
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import About from '@/components/About.astro';
-import Highlights from '@/components/Highlights.astro';
 import Founders from '@/components/Founders.astro';
+import Partners from '@/components/Partners.astro';
 import { LOCALES, type Locale, getDictionary } from '@/i18n';
+import { PARTNERS } from '@/data/partners';
 
 export function getStaticPaths() {
   return LOCALES.map((locale) => ({ params: { locale } }));
@@ -16,6 +17,6 @@ const t = getDictionary(locale);
 
 <BaseLayout locale={locale} title={t.nav.about}>
   <About locale={locale} headingLevel="h1" />
-  <Highlights locale={locale} id="highlights" />
   <Founders locale={locale} />
+  {PARTNERS.length > 0 && <Partners locale={locale} />}
 </BaseLayout>

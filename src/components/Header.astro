@@ -16,7 +16,7 @@ const current = stripLocale(Astro.url.pathname).replace(/^\/|\/$/g, '');
 const items = NAV_ITEMS.map((item) => ({
   label: t.nav[item.key],
   href: sectionHref(locale, item.section),
-  active: item.section !== 'programs' && sectionPage(item.section) === current,
+  active: sectionPage(item.section) === current,
 }));
 const trial = trialHref(locale);
 ---

@@ -16,7 +16,7 @@ interface Props {
   /** When set, a "See all questions" link to the full FAQ page is shown before the WhatsApp CTA. */
   seeAllHref?: string;
   headingLevel?: 'h1' | 'h2';
-  tone?: 'navy' | 'deep' | 'circuit';
+  tone?: 'navy' | 'deep' | 'circuit' | 'light';
 }
 const { locale, id = 'faq', ids, seeAllHref, headingLevel, tone = 'deep' } = Astro.props;
 const t = getDictionary(locale);

@@ -28,7 +28,7 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
 
   <div class="container-brand relative grid items-center gap-6 py-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12 lg:py-24">
     <div class="hero-copy max-w-2xl" style={`--title-em:${locale === 'ar' ? 6 : 10.6}`}>
-      <p class="hero-in text-sm font-semibold tracking-[0.18em] text-violet uppercase" style="--i:0">
+      <p class="hero-in text-sm font-semibold tracking-[0.18em] text-electric uppercase" style="--i:0">
         {t.hero.eyebrow}
       </p>
 
@@ -281,7 +281,7 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
       const net = createNeuralCanvas(canvas, {
         anchor: hero.querySelector('[data-brain-anchor]'),
         pointerTarget: hero,
-        staticFrame: reduced,
+        staticFrame: true, // No moving background anywhere (owner decision): one settled frame.
       });
       canvas.classList.add('is-ready');
       window.addEventListener('pagehide', () => net.destroy(), { once: true });
