@@ -258,6 +258,7 @@ const card = 'rounded-xl border border-white/10 bg-navy-800/80 shadow-card';
               {p.kind === 'development' && (
                 <>
                   <p class="text-base text-white/90">{p.summary}</p>
+                  <p class="text-sm font-semibold text-electric">{fill(c.ledBy, { name: t.founders.people[1]?.name ?? '' })}</p>
                   <div>
                     <h3 class="font-semibold text-white">{c.includes}</h3>
                     <ul class="mt-3 space-y-2 text-sm">

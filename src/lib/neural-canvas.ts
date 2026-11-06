@@ -6,8 +6,23 @@ export interface NeuralCanvasOptions {
   anchor?: Element | null;
   /** Element that receives pointer events (usually the hero section). */
   pointerTarget?: HTMLElement;
-  /** Render a single static frame (prefers-reduced-motion). */
+  /** Render a single static frame (no drifting nodes). */
   staticFrame?: boolean;
+  /**
+   * With staticFrame: every few seconds a small point of light travels along the existing network lines into
+   * the brain region ("knowledge flowing into a mind"). Off for prefers-reduced-motion; paused off-screen.
+   */
+  pulses?: boolean;
+}
+
+interface Pulse {
+  /** Polyline of node positions, ending inside the brain. */
+  pts: { x: number; y: number }[];
+  /** Cumulative length at each point. */
+  acc: number[];
+  len: number;
+  start: number;
+  duration: number;
 }
 
 interface Node {
@@ -31,7 +46,7 @@ const POINTER_RADIUS = 170;
 export function createNeuralCanvas(canvas: HTMLCanvasElement, options: NeuralCanvasOptions = {}) {
   const ctx = canvas.getContext('2d', { alpha: true });
   if (!ctx) return { destroy: () => {} };
-  const { anchor = null, pointerTarget = canvas.parentElement ?? canvas, staticFrame = false } = options;
+  const { anchor = null, pointerTarget = canvas.parentElement ?? canvas, staticFrame = false, pulses: withPulses = false } = options;
 
   let width = 0;
   let height = 0;
@@ -203,6 +218,141 @@ export function createNeuralCanvas(canvas: HTMLCanvasElement, options: NeuralCan
     draw();
   };
 
+  // ---- Signal pulses (static mode) ------------------------------------------------------------------------
+  const PULSE_RGB = '0, 184, 255';
+  const backdrop = document.createElement('canvas'); // snapshot of the settled network, redrawn under pulses
+  let pulses: Pulse[] = [];
+  let arrivals: { x: number; y: number; t: number }[] = [];
+  let nextSpawn = 0;
+  let pulseRaf = 0;
+
+  const snapshot = () => {
+    backdrop.width = canvas.width;
+    backdrop.height = canvas.height;
+    backdrop.getContext('2d')?.drawImage(canvas, 0, 0);
+  };
+
+  /** Walk from an outer node along visible links, always moving closer to the brain, until it gets there. */
+  const buildPath = (): Pulse | null => {
+    const ld2 = linkDist * linkDist;
+    const dist = (n: Node) => Math.hypot(n.x - brain.x, n.y - brain.y);
+    const starts = nodes.filter((n) => n.hx === null && dist(n) > Math.max(brain.rx, brain.ry) * 1.6 && n.x > 0 && n.x < width && n.y > 0 && n.y < height);
+    for (let attempt = 0; attempt < 12 && starts.length; attempt++) {
+      let cur = starts[Math.floor(Math.random() * starts.length)]!;
+      const path: Node[] = [cur];
+      while (path.length < 14) {
+        let best: Node | null = null;
+        let bestD = dist(cur) - 6; // must make progress toward the brain
+        for (const n of nodes) {
+          if (n === cur) continue;
+          const dx = n.x - cur.x;
+          const dy = n.y - cur.y;
+          if (dx * dx + dy * dy > ld2) continue;
+          const d = dist(n);
+          if (d < bestD) {
+            bestD = d;
+            best = n;
+          }
+        }
+        if (!best) break;
+        path.push(best);
+        cur = best;
+        if (best.hx !== null && dist(best) < Math.max(brain.rx, brain.ry) * 0.85) break;
+      }
+      const end = path[path.length - 1]!;
+      if (path.length >= 4 && end.hx !== null) {
+        const pts = path.map((n) => ({ x: n.x, y: n.y }));
+        const acc = [0];
+        for (let i = 1; i < pts.length; i++) acc.push(acc[i - 1]! + Math.hypot(pts[i]!.x - pts[i - 1]!.x, pts[i]!.y - pts[i - 1]!.y));
+        const len = acc[acc.length - 1]!;
+        return { pts, acc, len, start: 0, duration: Math.min(4200, Math.max(2200, len * 7)) };
+      }
+    }
+    return null;
+  };
+
+  const pointAt = (p: Pulse, dist: number) => {
+    const d = Math.max(0, Math.min(p.len, dist));
+    let i = 1;
+    while (i < p.acc.length - 1 && p.acc[i]! < d) i++;
+    const a = p.pts[i - 1]!;
+    const b = p.pts[i]!;
+    const seg = p.acc[i]! - p.acc[i - 1]! || 1;
+    const t = (d - p.acc[i - 1]!) / seg;
+    return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+  };
+
+  const drawPulses = (now: number) => {
+    const dpr = canvas.width / (width || 1);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(backdrop, 0, 0);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.globalCompositeOperation = 'lighter';
+    for (const p of pulses) {
+      const k = (now - p.start) / p.duration;
+      const eased = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; // ease-in-out
+      const head = eased * p.len;
+      // Fading trail: samples behind the head.
+      for (let s = 0; s <= 10; s++) {
+        const pt = pointAt(p, head - s * 5);
+        ctx.fillStyle = `rgba(${PULSE_RGB}, ${0.75 * (1 - s / 10)})`;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 2.2 * (1 - s / 14), 0, Math.PI * 2);
+        ctx.fill();
+      }
+      const h = pointAt(p, head);
+      ctx.fillStyle = `rgba(${PULSE_RGB}, 0.18)`;
+      ctx.beginPath();
+      ctx.arc(h.x, h.y, 9, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // Arrival: a soft ring opens where the signal reaches the brain.
+    for (const a of arrivals) {
+      const k = (now - a.t) / 900;
+      ctx.strokeStyle = `rgba(${PULSE_RGB}, ${0.6 * (1 - k)})`;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, 4 + k * 22, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  };
+
+  const pulseFrame = (now: number) => {
+    if (now >= nextSpawn && pulses.length < 2) {
+      const p = buildPath();
+      if (p) {
+        p.start = now;
+        pulses.push(p);
+      }
+      nextSpawn = now + 2600 + Math.random() * 1800;
+    }
+    for (const p of pulses) {
+      if (now - p.start >= p.duration) {
+        const end = p.pts[p.pts.length - 1]!;
+        arrivals.push({ x: end.x, y: end.y, t: now });
+        canvas.dispatchEvent(new CustomEvent('signal-arrive')); // lets the hero light up the brain
+      }
+    }
+    pulses = pulses.filter((p) => now - p.start < p.duration);
+    arrivals = arrivals.filter((a) => now - a.t < 900);
+    drawPulses(now);
+    pulseRaf = requestAnimationFrame(pulseFrame);
+  };
+  const pulsesShouldRun = () => staticFrame && withPulses && inView && pageVisible;
+  const startPulses = () => {
+    if (pulseRaf || !pulsesShouldRun()) return;
+    nextSpawn = performance.now() + 900;
+    pulseRaf = requestAnimationFrame(pulseFrame);
+  };
+  const stopPulses = () => {
+    cancelAnimationFrame(pulseRaf);
+    pulseRaf = 0;
+    pulses = [];
+    arrivals = [];
+  };
+
   // Pointer / touch attraction (coordinates relative to the canvas).
   const onPointerMove = (e: PointerEvent) => {
     const rect = canvas.getBoundingClientRect();
@@ -216,24 +366,38 @@ export function createNeuralCanvas(canvas: HTMLCanvasElement, options: NeuralCan
     inView = !!entry?.isIntersecting;
     if (shouldRun()) start();
     else stop();
+    if (pulsesShouldRun()) startPulses();
+    else stopPulses();
   });
   const onVisibility = () => {
     pageVisible = !document.hidden;
     if (shouldRun()) start();
     else stop();
+    if (pulsesShouldRun()) startPulses();
+    else stopPulses();
   };
   let resizeTimer = 0;
   const ro = new ResizeObserver(() => {
     window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(() => {
+      stopPulses();
       resize();
-      if (staticFrame) renderStatic();
+      if (staticFrame) {
+        renderStatic();
+        snapshot();
+        startPulses();
+      }
     }, 150);
   });
 
   resize();
   if (staticFrame) {
     renderStatic();
+    if (withPulses) {
+      snapshot();
+      document.addEventListener('visibilitychange', onVisibility);
+      io.observe(canvas);
+    }
   } else {
     pointerTarget.addEventListener('pointermove', onPointerMove, { passive: true });
     pointerTarget.addEventListener('pointerleave', onPointerLeave);
@@ -247,6 +411,7 @@ export function createNeuralCanvas(canvas: HTMLCanvasElement, options: NeuralCan
   return {
     destroy() {
       stop();
+      stopPulses();
       io.disconnect();
       ro.disconnect();
       window.clearTimeout(resizeTimer);

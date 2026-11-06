@@ -97,6 +97,8 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
       />
       <!-- Purple brain region of the emblem: the canvas converges nodes toward it. -->
       <span data-brain-anchor class="absolute start-[50%] top-[14%] h-[48%] w-[40%]"></span>
+      <!-- Halo BEHIND the emblem's brain side: brightens when a signal arrives (the logo itself is never altered). -->
+      <span class="brain-flash absolute start-[38%] top-[0%] -z-10 h-[76%] w-[64%]"></span>
     </div>
   </div>
 
@@ -152,6 +154,24 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
     }
   }
   /* Soft backdrop so the dark face and ring read on navy (behind the logo, not an effect on it). */
+  /* Brain lights up briefly when a signal pulse arrives (see neural-canvas pulses). */
+  .brain-flash {
+    pointer-events: none;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(0 184 255 / 0.5), rgb(161 102 255 / 0.3) 50%, transparent 100%);
+    opacity: 0;
+  }
+  .brain-flash.is-lit {
+    animation: brain-lit 1.1s ease-out;
+  }
+  @keyframes brain-lit {
+    25% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
   .hero__emblem-glow {
     background:
       radial-gradient(circle at 66% 38%, rgb(161 102 255 / 0.38), transparent 42%),
@@ -281,9 +301,18 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
       const net = createNeuralCanvas(canvas, {
         anchor: hero.querySelector('[data-brain-anchor]'),
         pointerTarget: hero,
-        staticFrame: true, // No moving background anywhere (owner decision): one settled frame.
+        staticFrame: true, // The network itself stays still (owner decision)…
+        pulses: !reduced, // …but small signals travel along it into the brain: knowledge flowing into a mind.
       });
       canvas.classList.add('is-ready');
+      // When a signal reaches the brain, the brain glows softly for a moment.
+      const flash = hero.querySelector<HTMLElement>('.brain-flash');
+      canvas.addEventListener('signal-arrive', () => {
+        if (!flash) return;
+        flash.classList.remove('is-lit');
+        void flash.offsetWidth; // restart the animation
+        flash.classList.add('is-lit');
+      });
       window.addEventListener('pagehide', () => net.destroy(), { once: true });
     };
     const idle = () =>

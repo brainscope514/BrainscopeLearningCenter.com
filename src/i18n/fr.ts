@@ -237,6 +237,7 @@ const fr: Dictionary = {
     notify: 'Me prévenir sur WhatsApp',
     notifyMessage: 'Bonjour Brainscope ! Merci de me prévenir quand les cours d’échecs commencent.',
     empty: 'Aucun programme dans ce groupe pour le moment.',
+    ledBy: 'Animé par {name}',
   },
   founders: {
     eyebrow: 'Fondateurs',
@@ -246,15 +247,14 @@ const fr: Dictionary = {
     people: [
       {
         name: 'Bassam Eter',
-        role: 'Cofondateur · Ingénierie, robotique, programmes et opérations',
-        bio: 'Bassam dirige le programme d’ingénierie et de robotique et assure la gestion opérationnelle, en apportant à chaque programme la rigueur d’un ingénieur et une vraie discipline d’organisation.',
-        // PLACEHOLDER: shown only when SHOW_MILITARY_AFFILIATION is true; wording to be approved.
-        military: 'PLACEHOLDER: professional background statement, to be approved.',
+        role: 'Cofondateur · Ingénierie et enseignement',
+        bio: 'Bassam Eter est ingénieur en mécatronique, diplômé de l’AUST, et officier des opérations aéroportuaires dans l’Armée de l’air libanaise, formé à la base aérienne de Keesler aux États-Unis, titulaire d’une licence en sciences militaires et ancien contrôleur aérien et officier de liaison auprès de la FINUL. Il a dirigé l’installation de systèmes de navigation aérienne, s’est formé à la robotique industrielle avec une entreprise américaine, aux automates programmables et aux moteurs diesel, détient un diplôme en mécatronique automobile et est certifié en IA (Huawei, Université d’Helsinki), science des données, réseaux, RPA, énergies renouvelables, conception de systèmes incendie, gestion de projet et logistique portuaire. Préparant un diplôme d’ingénieur en IA à l’ESIB, Université Saint-Joseph, et actif dans l’automatisation par l’IA, il a enseigné les systèmes automobiles et le dessin technique ; chez Brainscope, il dirige les programmes et enseigne la robotique, l’IA, la programmation, les mathématiques et la physique.',
+        military: '',
       },
       {
         name: 'Marie Deeb',
-        role: 'Cofondatrice · Communication et jeunes apprenants',
-        bio: 'Marie est l’interlocutrice des familles et pilote les programmes destinés aux plus jeunes, pour que chaque enfant se sente accueilli, motivé et écouté.',
+        role: 'Cofondatrice · Communication et leadership',
+        bio: 'Marie Deeb est journaliste et présentatrice radio et télévision certifiée, diplômée en journalisme de la Lebanese International University ; elle étudie aujourd’hui le droit à l’Université libanaise. Formatrice de formateurs certifiée, elle est aussi titulaire de diplômes en criminologie avancée et investigation de scène de crime, en médias internationaux et propagande, et en présentation radio et télévision. Parlant quatre langues, elle dirige le programme de communication et de leadership de Brainscope et accompagne nos plus jeunes élèves.',
         military: '',
       },
     ],

@@ -236,6 +236,7 @@ const en = {
     notify: 'Notify me on WhatsApp',
     notifyMessage: 'Hello Brainscope! Please let me know when Chess classes start.',
     empty: 'No programs in this group yet.',
+    ledBy: 'Led by {name}',
   },
   founders: {
     eyebrow: 'Founders',
@@ -245,15 +246,14 @@ const en = {
     people: [
       {
         name: 'Bassam Eter',
-        role: 'Co-founder · Engineering, robotics, curriculum & operations',
-        bio: 'Bassam leads the engineering and robotics curriculum and runs operations, bringing an engineer’s rigor and operational discipline to every program.',
-        // PLACEHOLDER: shown only when SHOW_MILITARY_AFFILIATION is true; wording to be approved.
-        military: 'PLACEHOLDER: professional background statement, to be approved.',
+        role: 'Co-founder · Engineering & teaching',
+        bio: 'Bassam Eter is a mechatronics engineer, a graduate of AUST, and an Airfield Operations Officer in the Lebanese Air Force, trained at Keesler Air Force Base in the United States, with a bachelor’s in military science and experience as an air traffic controller and UNIFIL liaison officer. He led the installation of aviation navigation systems, trained in industrial robotics with a US company, PLC automation and diesel engines, holds a diploma in automotive mechatronics, and is certified in AI (Huawei, University of Helsinki), data science, networking, RPA, renewable energy, fire systems design, project management and port logistics. Now pursuing AI engineering at ESIB, Saint Joseph University, and working in AI automation, he has taught automotive systems and engineering drawing; at Brainscope he leads the curriculum and teaches robotics, AI, programming, math and physics.',
+        military: '',
       },
       {
         name: 'Marie Deeb',
-        role: 'Co-founder · Communications & young learners',
-        bio: 'Marie leads communication with families and the young learners’ programs, making sure every child feels welcome, motivated and heard.',
+        role: 'Co-founder · Communication & leadership',
+        bio: 'Marie Deeb is a journalist and certified TV and radio presenter with a degree in journalism from the Lebanese International University, now studying law at the Lebanese University. A certified trainer of trainers, she also holds diplomas in advanced criminology and crime scene investigation, international media and propaganda, and radio and TV presentation. Fluent in four languages, she leads Brainscope’s communication and leadership program and works with our youngest learners.',
         military: '',
       },
     ],

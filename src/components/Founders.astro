@@ -1,11 +1,11 @@
 ---
-// Founders: credibility cards with PLACEHOLDER portraits. Military background lines only render when
-// FLAGS.SHOW_MILITARY_AFFILIATION is true (wording to be approved by the founders).
+// Founders: one short bio paragraph per founder, with PLACEHOLDER portraits.
+// Professional background wording is approved by the founders and lives in the bio text (src/i18n).
 import Section from './Section.astro';
 import Button from './Button.astro';
 import Placeholder from './Placeholder.astro';
 import { type Locale, getDictionary } from '@/i18n';
-import { FLAGS, whatsappLink } from '@/data/site';
+import { whatsappLink } from '@/data/site';
 
 interface Props {
   locale: Locale;
@@ -19,16 +19,15 @@ const initials = (name: string) =>
 ---
 
 <Section id="founders" eyebrow={t.founders.eyebrow} title={t.founders.title} intro={t.founders.intro} tone="light">
-  <ul class="mt-14 grid gap-8 md:grid-cols-2" data-reveal="stagger">
+  <ul class="mt-14 grid gap-8 lg:grid-cols-2" data-reveal="stagger">
     {
       t.founders.people.map((person) => (
-        <li class="grid gap-6 rounded-xl border border-white/10 bg-navy-800/70 p-6 shadow-card sm:grid-cols-[10rem_1fr]">
-          <Placeholder label={t.founders.portrait} initials={initials(person.name)} ratio="4 / 5" class="max-sm:max-w-40" />
+        <li class="grid gap-6 rounded-xl border border-white/10 bg-navy-800/70 p-6 shadow-card sm:grid-cols-[9rem_1fr] sm:p-8">
+          <Placeholder label={t.founders.portrait} initials={initials(person.name)} ratio="4 / 5" class="max-sm:max-w-36" />
           <div>
             <h3 class="text-2xl font-bold text-white" dir="auto">{person.name}</h3>
             <p class="mt-1 text-sm font-semibold text-violet">{person.role}</p>
-            <p class="mt-4 text-ink-muted">{person.bio}</p>
-            {FLAGS.SHOW_MILITARY_AFFILIATION && person.military && <p class="mt-3 text-sm text-ink-muted">{person.military}</p>}
+            <p class="mt-4 leading-relaxed text-ink-muted">{person.bio}</p>
           </div>
         </li>
       ))
