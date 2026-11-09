@@ -7,6 +7,8 @@ import IconBadge from './IconBadge.astro';
 import LineIcon from './LineIcon.astro';
 import Icon from './Icon.astro';
 import Insignia from './Insignia.astro';
+import PartnerLogos from './PartnerLogos.astro';
+import { PARTNERS } from '@/data/partners';
 import { type Locale, fill, getDictionary, trialHref } from '@/i18n';
 import { whatsappLink } from '@/data/site';
 
@@ -276,6 +278,14 @@ const card = 'rounded-xl border border-white/10 bg-navy-800/80 shadow-card';
               {p.kind === 'partnerships' && (
                 <>
                   <p class="text-base text-white/90">{t.partners.intro}</p>
+                  {PARTNERS.length > 0 && (
+                    <div>
+                      <h3 class="font-semibold text-white">{t.partners.listTitle}</h3>
+                      <div class="mt-3">
+                        <PartnerLogos locale={locale} compact />
+                      </div>
+                    </div>
+                  )}
                   <div>
                     <h3 class="font-semibold text-white">{t.partners.offerTitle}</h3>
                     <ul class="mt-3 grid gap-2 sm:grid-cols-2">

@@ -1,5 +1,6 @@
 ---
-// Base page shell: <html lang dir>, head (SEO, icons, fonts), skip link, header, main, footer, WhatsApp button.
+// Base page shell: <html lang dir>, head (SEO, icons, fonts), skip link, header, main, footer, floating buttons (desktop)
+// and the bottom action bar (phones).
 import '@fontsource/montserrat/400.css';
 import '@fontsource/montserrat/500.css';
 import '@fontsource/montserrat/600.css';
@@ -18,10 +19,9 @@ import SkipLink from '@/components/SkipLink.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import WhatsAppFloat from '@/components/WhatsAppFloat.astro';
+import MobileActionBar from '@/components/MobileActionBar.astro';
 import ChatLauncher from '@/components/ChatLauncher.astro';
 import Analytics from '@/components/Analytics.astro';
-import PreloaderGate from '@/components/PreloaderGate.astro';
-import Preloader from '@/components/Preloader.astro';
 import { type Locale, getDictionary, getDir, withBase } from '@/i18n';
 
 interface Props {
@@ -29,10 +29,8 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
-  /** Show the first-visit brand preloader (home page only). */
-  preloader?: boolean;
 }
-const { locale, title, description, noindex, preloader = false } = Astro.props;
+const { locale, title, description, noindex } = Astro.props;
 const t = getDictionary(locale);
 ---
 
@@ -40,7 +38,6 @@ const t = getDictionary(locale);
 <html lang={locale} dir={getDir(locale)}>
   <head>
     <meta charset="utf-8" />
-    {preloader && <PreloaderGate />}
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#081D3A" />
     <meta name="color-scheme" content="dark" />
@@ -55,7 +52,6 @@ const t = getDictionary(locale);
     <Analytics />
   </head>
   <body class="bg-navy font-sans text-ink antialiased">
-    {preloader && <Preloader />}
     <SkipLink label={t.a11y.skipToContent} />
     <Header locale={locale} />
     <main id="main" tabindex="-1" class="outline-none">
@@ -64,6 +60,7 @@ const t = getDictionary(locale);
     <Footer locale={locale} />
     <ChatLauncher locale={locale} />
     <WhatsAppFloat locale={locale} />
+    <MobileActionBar locale={locale} />
     <script>
       // Scroll reveals, tilt and magnetic buttons on every page, wired once the main thread is idle.
       import { initMotion, registerMotion } from '@/lib/motion';

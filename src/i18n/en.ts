@@ -247,7 +247,7 @@ const en = {
       {
         name: 'Bassam Eter',
         role: 'Co-founder · Engineering & teaching',
-        bio: 'Bassam Eter is a mechatronics engineer, a graduate of AUST, and an Airfield Operations Officer in the Lebanese Air Force, trained at Keesler Air Force Base in the United States, with a bachelor’s in military science and experience as an air traffic controller and UNIFIL liaison officer. He led the installation of aviation navigation systems, trained in industrial robotics with a US company, PLC automation and diesel engines, holds a diploma in automotive mechatronics, and is certified in AI (Huawei, University of Helsinki), data science, networking, RPA, renewable energy, fire systems design, project management and port logistics. Now pursuing AI engineering at ESIB, Saint Joseph University, and working in AI automation, he has taught automotive systems and engineering drawing; at Brainscope he leads the curriculum and teaches robotics, AI, programming, math and physics.',
+        bio: 'Bassam Eter is a mechatronics engineer (AUST) and an Airfield Operations Officer in the Lebanese Air Force, trained at Keesler Air Force Base in the United States, with experience as an air traffic controller and UNIFIL liaison officer. He trained in industrial robotics and PLC automation, holds a diploma in automotive mechatronics, and is certified in AI (Huawei, University of Helsinki), data science and project management. Now pursuing AI engineering at ESIB, Saint Joseph University, he leads Brainscope’s curriculum and teaches robotics, AI, programming, math and physics.',
         military: '',
       },
       {
@@ -339,6 +339,12 @@ const en = {
     eyebrow: 'Free trial',
     title: 'Book a free trial session',
     intro: 'Fill in a few details and we will continue the conversation on WhatsApp. It takes less than a minute.',
+    stepsTitle: 'How it works',
+    steps: [
+      { title: 'Send the form', text: 'Pick a program and a time. WhatsApp opens with your details filled in.' },
+      { title: 'We agree on a time', text: 'We reply on WhatsApp to set a day and time that suits you.' },
+      { title: 'Come for the free trial', text: 'Meet the teacher, try a real session, then decide.' },
+    ],
     nameLabel: 'Parent or student name',
     ageLabel: 'Student’s age',
     programLabel: 'Program of interest',
@@ -408,6 +414,28 @@ const en = {
     handoffMessage: 'Hello Brainscope! I have a question: ',
     confirmNote: 'For the latest details, please confirm with the team on WhatsApp.',
     quickReplies: ['ages', 'programs', 'trial', 'location', 'fees', 'schedule'],
+  },
+  trust: {
+    label: 'Brainscope at a glance',
+    items: [
+      { id: 'ages', icon: 'development', title: 'Ages 6 to university', text: 'Kids, school and university programs' },
+      { id: 'parents', icon: 'agenda', title: 'Weekly parent follow-up', text: 'Progress shared with parents every week' },
+      { id: 'trial', icon: 'check', title: 'Free trial session', text: 'Try a class before you enroll' },
+      { id: 'location', icon: 'pin', title: 'Tripoli–Zgharta Road, Zgharta', text: 'Open in Google Maps' },
+    ],
+  },
+  navHints: {
+    about: 'Our story and the founders',
+    programs: 'Robotics, AI, school and university support',
+    faq: 'Ages, trials and practical answers',
+    contact: 'Location, phone and WhatsApp',
+  },
+  actionBar: {
+    label: 'Quick actions',
+    book: 'Free trial',
+    whatsapp: 'WhatsApp',
+    call: 'Call',
+    chat: 'Ask',
   },
   notFound: {
     title: 'Page not found',

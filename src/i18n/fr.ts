@@ -248,7 +248,7 @@ const fr: Dictionary = {
       {
         name: 'Bassam Eter',
         role: 'Cofondateur · Ingénierie et enseignement',
-        bio: 'Bassam Eter est ingénieur en mécatronique, diplômé de l’AUST, et officier des opérations aéroportuaires dans l’Armée de l’air libanaise, formé à la base aérienne de Keesler aux États-Unis, titulaire d’une licence en sciences militaires et ancien contrôleur aérien et officier de liaison auprès de la FINUL. Il a dirigé l’installation de systèmes de navigation aérienne, s’est formé à la robotique industrielle avec une entreprise américaine, aux automates programmables et aux moteurs diesel, détient un diplôme en mécatronique automobile et est certifié en IA (Huawei, Université d’Helsinki), science des données, réseaux, RPA, énergies renouvelables, conception de systèmes incendie, gestion de projet et logistique portuaire. Préparant un diplôme d’ingénieur en IA à l’ESIB, Université Saint-Joseph, et actif dans l’automatisation par l’IA, il a enseigné les systèmes automobiles et le dessin technique ; chez Brainscope, il dirige les programmes et enseigne la robotique, l’IA, la programmation, les mathématiques et la physique.',
+        bio: 'Bassam Eter est ingénieur en mécatronique (AUST) et officier des opérations aéroportuaires dans l’Armée de l’air libanaise, formé à la base aérienne de Keesler aux États-Unis, ancien contrôleur aérien et officier de liaison auprès de la FINUL. Formé à la robotique industrielle et aux automates programmables, il détient un diplôme en mécatronique automobile et des certifications en IA (Huawei, Université d’Helsinki), science des données et gestion de projet. Préparant un diplôme d’ingénieur en IA à l’ESIB, Université Saint-Joseph, il dirige les programmes de Brainscope et enseigne la robotique, l’IA, la programmation, les mathématiques et la physique.',
         military: '',
       },
       {
@@ -340,6 +340,12 @@ const fr: Dictionary = {
     eyebrow: 'Essai gratuit',
     title: 'Réserver une séance d’essai gratuite',
     intro: 'Renseignez quelques informations et nous poursuivrons l’échange sur WhatsApp. Cela prend moins d’une minute.',
+    stepsTitle: 'Comment ça marche',
+    steps: [
+      { title: 'Envoyez le formulaire', text: 'Choisissez un programme et un horaire : WhatsApp s’ouvre avec vos informations déjà remplies.' },
+      { title: 'Nous fixons un horaire', text: 'Nous vous répondons sur WhatsApp pour convenir d’un jour et d’une heure.' },
+      { title: 'Venez à la séance d’essai', text: 'Rencontrez l’enseignant, essayez une vraie séance, puis décidez.' },
+    ],
     nameLabel: 'Nom du parent ou de l’élève',
     ageLabel: 'Âge de l’élève',
     programLabel: 'Programme souhaité',
@@ -409,6 +415,28 @@ const fr: Dictionary = {
     handoffMessage: 'Bonjour Brainscope ! J’ai une question : ',
     confirmNote: 'Pour les informations les plus récentes, merci de confirmer auprès de l’équipe sur WhatsApp.',
     quickReplies: ['ages', 'programs', 'trial', 'location', 'fees', 'schedule'],
+  },
+  trust: {
+    label: 'Brainscope en bref',
+    items: [
+      { id: 'ages', icon: 'development', title: 'De 6 ans à l’université', text: 'Programmes enfants, scolaires et universitaires' },
+      { id: 'parents', icon: 'agenda', title: 'Suivi parents chaque semaine', text: 'Les progrès partagés avec les parents' },
+      { id: 'trial', icon: 'check', title: 'Séance d’essai gratuite', text: 'Essayez un cours avant de vous inscrire' },
+      { id: 'location', icon: 'pin', title: 'Route Tripoli–Zgharta, Zgharta', text: 'Ouvrir dans Google Maps' },
+    ],
+  },
+  navHints: {
+    about: 'Notre histoire et les fondateurs',
+    programs: 'Robotique, IA, soutien scolaire et universitaire',
+    faq: 'Âges, essais et réponses pratiques',
+    contact: 'Adresse, téléphone et WhatsApp',
+  },
+  actionBar: {
+    label: 'Actions rapides',
+    book: 'Essai gratuit',
+    whatsapp: 'WhatsApp',
+    call: 'Appeler',
+    chat: 'Questions',
   },
   notFound: {
     title: 'Page introuvable',

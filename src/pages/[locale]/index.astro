@@ -1,7 +1,8 @@
 ---
-// Home page: hero, the four program families (each links to its own page) and a 3-question FAQ preview.
+// Home page: hero, trust strip, the four program families (each opens its popup) and a 3-question FAQ preview.
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/Hero.astro';
+import TrustStrip from '@/components/TrustStrip.astro';
 import Programs from '@/components/Programs.astro';
 import Faq from '@/components/Faq.astro';
 import { LOCALES, type Locale } from '@/i18n';
@@ -15,8 +16,9 @@ export function getStaticPaths() {
 const locale = Astro.params.locale as Locale;
 ---
 
-<BaseLayout locale={locale} preloader>
+<BaseLayout locale={locale}>
   <Hero locale={locale} nextId="programs" />
+  <TrustStrip locale={locale} />
   <Programs locale={locale} />
   <Faq locale={locale} id="faq-top" ids={HOME_FAQ_IDS} seeAllHref={pagePath(locale, 'faq')} tone="light" />
 </BaseLayout>

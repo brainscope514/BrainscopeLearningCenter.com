@@ -1,0 +1,79 @@
+---
+// Honest trust strip under the home hero: ages, weekly parent follow-up, free trial, location (links to Google Maps).
+// Only confirmed facts go here. No numbers until the founders confirm them.
+import LineIcon from './LineIcon.astro';
+import { type Locale, getDictionary } from '@/i18n';
+import { mapSearchUrl } from '@/data/site';
+
+interface Props {
+  locale: Locale;
+}
+const t = getDictionary(Astro.props.locale);
+const mapUrl = mapSearchUrl();
+---
+
+<section class="trust border-b border-white/10 bg-navy-900" aria-labelledby="trust-title">
+  <h2 id="trust-title" class="sr-only">{t.trust.label}</h2>
+  <div class="container-brand">
+  <ul class="grid grid-cols-2 gap-px bg-white/10 lg:grid-cols-4">
+    {
+      t.trust.items.map((item) => {
+        const inner = (
+          <>
+            <LineIcon name={item.icon} class="mt-0.5 size-6 shrink-0 text-electric" />
+            <span class="min-w-0">
+              <span class="block text-sm font-semibold text-white sm:text-base">{item.title}</span>
+              <span class="trust__text mt-1 block text-xs text-ink-muted sm:text-sm">{item.text}</span>
+            </span>
+          </>
+        );
+        return (
+          <li class="bg-navy-900">
+            {item.id === 'location' ? (
+              <a
+                href={mapUrl}
+                target="_blank"
+                rel="noopener"
+                class="trust__cell trust__link flex h-full gap-3 transition-colors hover:bg-white/[0.03]"
+              >
+                {inner}
+                <span class="sr-only">{t.a11y.opensInNewTab}</span>
+              </a>
+            ) : (
+              <div class="trust__cell flex h-full gap-3">{inner}</div>
+            )}
+          </li>
+        );
+      })
+    }
+  </ul>
+  </div>
+</section>
+
+<style>
+  .trust__cell {
+    padding: 1.25rem 1rem;
+  }
+  @media (min-width: 640px) {
+    .trust__cell {
+      padding: 1.5rem 1.5rem;
+    }
+  }
+  /* Outer columns align with the page content edge (the container already pads the sides). */
+  @media (min-width: 1024px) {
+    li:first-child .trust__cell {
+      padding-inline-start: 0;
+    }
+    li:last-child .trust__cell {
+      padding-inline-end: 0;
+    }
+  }
+  .trust__link .trust__text {
+    text-decoration: underline;
+    text-decoration-color: rgb(0 184 255 / 0.5);
+    text-underline-offset: 3px;
+  }
+  .trust__link:hover .trust__text {
+    color: #fff;
+  }
+</style>

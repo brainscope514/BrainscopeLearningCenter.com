@@ -235,12 +235,6 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
         animation-delay: calc(var(--i, 0) * 110ms + 120ms);
       }
     }
-    :global(html.bs-preload) .hero-in {
-      animation-delay: calc(var(--i, 0) * 90ms + 1000ms);
-    }
-    :global(html.bs-preload) .hero-word {
-      animation-delay: calc(var(--i, 0) * 110ms + 1000ms);
-    }
     .hero-scroll-dot {
       animation: hero-scroll 1.8s ease-in-out 2.2s infinite;
     }
@@ -293,7 +287,6 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   const canvas = hero?.querySelector<HTMLCanvasElement>('[data-hero-canvas]');
   const reduced = prefersReducedMotion();
-  const preloading = document.documentElement.classList.contains('bs-preload');
 
   // Start the canvas once the page has loaded and the main thread is idle (protects LCP / TBT).
   if (hero && canvas) {
@@ -326,7 +319,7 @@ const [firstWord, ...otherWords] = t.hero.rotatorWords;
   if (words.length > 1) {
     words.forEach((w) => w.classList.remove('hero-rotator__idle'));
     gsap.set(words.slice(1), { autoAlpha: 0 });
-    const tl = gsap.timeline({ delay: preloading ? 2.2 : 1.4 });
+    const tl = gsap.timeline({ delay: 1.4 });
     words.slice(1).forEach((next, i) => {
       const current = words[i]!;
       const at = i * 1.25;

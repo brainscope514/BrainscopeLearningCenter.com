@@ -13,6 +13,8 @@ interface Props {
 }
 const t = getDictionary(Astro.props.locale);
 const b = t.book;
+// Sub-heading one level below the section title.
+const StepsHeading = Astro.props.headingLevel === 'h1' ? 'h2' : 'h3';
 // Everything the script needs to compose the message, passed as data (no strings hardcoded in the script).
 const config = JSON.stringify({ number: CONTACT.whatsappNumber, message: b.message, errors: b.errors });
 const field =
@@ -22,6 +24,26 @@ const error = 'mt-2 text-sm font-medium text-[#ff8fbf]';
 ---
 
 <Section id="book" headingLevel={Astro.props.headingLevel} eyebrow={b.eyebrow} title={b.title} intro={b.intro} tone="light">
+  <!-- How it works: the three real steps between this form and the first session. -->
+  <div class="mt-10" data-reveal>
+    <StepsHeading class="text-lg font-bold text-white">{b.stepsTitle}</StepsHeading>
+    <ol class="steps mt-5 grid gap-6 sm:grid-cols-3 sm:gap-8">
+      {
+        b.steps.map((step, i) => (
+          <li class="steps__item relative flex gap-4 sm:flex-col sm:gap-3">
+            <span class="steps__num relative z-10 grid size-9 shrink-0 place-items-center rounded-full bg-purple text-sm font-bold text-white" aria-hidden="true">
+              {i + 1}
+            </span>
+            <span>
+              <span class="block font-semibold text-white">{step.title}</span>
+              <span class="mt-1 block text-sm text-ink-muted">{step.text}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+
   <div class="mt-12 grid gap-10 lg:grid-cols-[1.4fr_0.6fr]">
     <div class="rounded-2xl border border-violet/30 bg-navy-800/90 p-6 shadow-glow-purple sm:p-8" data-reveal>
       <noscript>
@@ -125,6 +147,29 @@ const error = 'mt-2 text-sm font-medium text-[#ff8fbf]';
     </aside>
   </div>
 </Section>
+
+<style>
+  /* Thin line joining the step numbers: vertical on phones, horizontal from sm up (mirrors in RTL). */
+  .steps__item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 1.125rem;
+    top: 2.5rem;
+    bottom: -1.25rem;
+    width: 1px;
+    background: rgb(106 44 255 / 0.3);
+  }
+  @media (min-width: 640px) {
+    .steps__item:not(:last-child)::after {
+      inset-inline-start: 2.75rem;
+      inset-inline-end: -1.5rem;
+      top: 1.125rem;
+      bottom: auto;
+      width: auto;
+      height: 1px;
+    }
+  }
+</style>
 
 <script>
   import { buildTrialMessage, validateTrial, type TrialConfig, type TrialValues } from '@/lib/trial-form';

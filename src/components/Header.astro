@@ -13,8 +13,10 @@ const { locale } = Astro.props;
 const t = getDictionary(locale);
 // Current page slug ('' = home) so the matching nav item gets aria-current="page".
 const current = stripLocale(Astro.url.pathname).replace(/^\/|\/$/g, '');
+const hints = t.navHints as Record<string, string>;
 const items = NAV_ITEMS.map((item) => ({
   label: t.nav[item.key],
+  hint: hints[item.key] ?? '',
   href: sectionHref(locale, item.section),
   active: sectionPage(item.section) === current,
 }));
@@ -94,9 +96,10 @@ const trial = trialHref(locale);
                   href={item.href}
                   aria-current={item.active ? 'page' : undefined}
                   data-menu-link
-                  class="nav-link block rounded-md px-4 py-3 text-lg font-semibold hover:bg-white/5"
+                  class="nav-link block rounded-md px-4 py-3 hover:bg-white/5"
                 >
-                  {item.label}
+                  <span class="block text-lg font-semibold">{item.label}</span>
+                  {item.hint && <span class="nav-hint mt-0.5 block text-sm font-normal text-ink-muted">{item.hint}</span>}
                 </a>
               </li>
             ))

@@ -1,0 +1,78 @@
+---
+// Partner logo grid (src/data/partners.ts): white tiles so every logo keeps its own colors on the dark site.
+// Used on the About page (Collaborations section) and inside the Collaborations popup on the Programs page.
+import { Image } from 'astro:assets';
+import { type Locale, getDictionary } from '@/i18n';
+import { PARTNERS } from '@/data/partners';
+
+interface Props {
+  locale: Locale;
+  /** Smaller tiles for the popup. */
+  compact?: boolean;
+}
+const { locale, compact = false } = Astro.props;
+const t = getDictionary(locale);
+---
+
+{
+  PARTNERS.length > 0 && (
+    <ul class:list={['grid gap-3', compact ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5']}>
+      {PARTNERS.map((partner) => {
+        const content = partner.logo ? (
+          <Image
+            src={partner.logo}
+            alt={partner.name}
+            width={320}
+            densities={[1, 2]}
+            class:list={['w-full object-contain', compact ? 'h-12' : 'h-16 sm:h-20']}
+          />
+        ) : (
+          <span class="text-base leading-tight font-bold tracking-tight text-[#081D3A]">{partner.name}</span>
+        );
+        return (
+          <li>
+            {partner.url ? (
+              <a
+                href={partner.url}
+                target="_blank"
+                rel="noopener"
+                class:list={['partner-tile', compact ? 'min-h-20 p-3' : 'min-h-28 p-4']}
+              >
+                {content}
+                <span class="sr-only"> {t.a11y.opensInNewTab}</span>
+              </a>
+            ) : (
+              <div class:list={['partner-tile', compact ? 'min-h-20 p-3' : 'min-h-28 p-4']}>{content}</div>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  )
+}
+
+<style>
+  .partner-tile {
+    display: grid;
+    height: 100%;
+    place-items: center;
+    border-radius: 0.75rem;
+    background: #fff;
+    text-align: center;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.12);
+    transition: transform 0.2s var(--ease-brand), box-shadow 0.2s var(--ease-brand);
+  }
+  a.partner-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 2px #a166ff;
+  }
+  a.partner-tile:focus-visible {
+    outline: 2px solid #00b8ff;
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .partner-tile {
+      transition: none;
+    }
+  }
+</style>

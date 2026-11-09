@@ -29,7 +29,8 @@ export interface ChatOptions {
   strings: ChatStrings;
   whatsappNumber: string;
   workerUrl: string;
-  launcher: HTMLButtonElement;
+  /** Every button that opens the assistant (floating launcher on desktop, action bar on phones). */
+  launchers: HTMLElement[];
 }
 
 const FAQ_LOADERS: Record<Locale, () => Promise<{ default: FaqEntry[] }>> = {
@@ -48,7 +49,10 @@ const el = <K extends keyof HTMLElementTagNameMap>(tag: K, className = '', text 
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export async function createChat(opts: ChatOptions) {
-  const { strings: s, launcher } = opts;
+  const { strings: s, launchers } = opts;
+  /** The button that opened the panel: focus returns to it on close (falls back to any visible launcher). */
+  let opener: HTMLElement | undefined;
+  const setExpanded = (value: boolean) => launchers.forEach((b) => b.setAttribute('aria-expanded', String(value)));
   const faq = new FaqProvider((await FAQ_LOADERS[opts.locale]()).default);
   const provider: ChatProvider = opts.workerUrl ? new ClaudeWorkerProvider(opts.workerUrl, faq) : faq;
   const history: ChatTurn[] = [];
@@ -242,12 +246,15 @@ export async function createChat(opts: ChatOptions) {
   // ---- Open / close ----------------------------------------------------------------------------------------
   const close = () => {
     panel.hidden = true;
-    launcher.setAttribute('aria-expanded', 'false');
-    launcher.focus();
+    setExpanded(false);
+    const visible = (b: HTMLElement) => b.offsetParent !== null;
+    const target = opener && visible(opener) ? opener : launchers.find(visible);
+    target?.focus();
   };
-  const open = () => {
+  const open = (from?: HTMLElement) => {
+    if (from) opener = from;
     panel.hidden = false;
-    launcher.setAttribute('aria-expanded', 'true');
+    setExpanded(true);
     input.focus({ preventScroll: true });
     scrollToLatest();
   };
@@ -259,5 +266,5 @@ export async function createChat(opts: ChatOptions) {
   bubble('assistant', s.greeting);
   setChips(s.quickReplies);
 
-  return { open, close, toggle: () => (panel.hidden ? open() : close()) };
+  return { open, close, toggle: (from?: HTMLElement) => (panel.hidden ? open(from) : close()) };
 }
