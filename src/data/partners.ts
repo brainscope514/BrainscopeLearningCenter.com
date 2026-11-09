@@ -20,7 +20,7 @@ export interface Partner {
 export const PARTNERS: Partner[] = [
   { name: 'alefbaa.ai', logo: alefbaaLogo, url: 'https://www.instagram.com/alefbaa.ai/' },
   { name: 'FutureBots', logo: futurebotsLogo, url: 'https://futurebots.academy/' },
-  { name: 'CKC Chedid', logo: ckcLogo, url: 'https://www.instagram.com/p/DAQ_q2CNUfJ/' },
+  { name: 'CKC Chedid', logo: ckcLogo, url: 'https://www.instagram.com/chedidc.k.c/' },
   // Logo only, no link (by choice).
   { name: 'Smart Electric', logo: smartElectricLogo },
   // TODO_CONFIRM: logo (name-only tile until it arrives).
