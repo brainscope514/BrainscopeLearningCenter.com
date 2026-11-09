@@ -15,7 +15,7 @@ const initials = (name: string) =>
   name
     .split(' ')
     .map((part) => part[0])
-    .join('');
+    .join('\u200C');
 ---
 
 <Section id="founders" eyebrow={t.founders.eyebrow} title={t.founders.title} intro={t.founders.intro} tone="light">
