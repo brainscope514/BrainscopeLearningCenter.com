@@ -27,23 +27,24 @@ export const CONTACT = {
 export const SOCIAL = {
   instagramHandle: 'brainscopecenter',
   instagram: 'https://www.instagram.com/brainscopecenter/',
-  facebook: 'TODO_CONFIRM',
+  facebook: 'https://www.facebook.com/share/1FM84GwVTt/',
+  // TODO_CONFIRM: TikTok link (hidden on the site until filled in).
   tiktok: 'TODO_CONFIRM',
   /** Google Business listing (share link from Google Maps). */
   googleMaps: 'https://share.google/CtCgJrSo6yIR83ffY',
 } as const;
 
-/** Query for the click-to-load map embed (the share link above cannot be embedded). Links use SOCIAL.googleMaps. */
 /**
  * Search engine ownership verification (Google Search Console / Bing Webmaster Tools).
  * Paste only the code from the "HTML tag" method, e.g. for <meta name="google-site-verification" content="abc123">
  * put 'abc123'. Leave empty until you have it.
  */
 export const SEARCH_VERIFICATION = {
-  google: '',
+  google: 'YEyPSeEBs0URmuquKuWT_ObBO38yjRSqgtp9JLzg0BU',
   bing: '',
 } as const;
 
+/** Query for the click-to-load map embed (the share link above cannot be embedded). Links use SOCIAL.googleMaps. */
 export const MAP_QUERY = 'Brainscope Learning Center, Zgharta, Lebanon';
 export const mapSearchUrl = (): string =>
   isConfirmed(SOCIAL.googleMaps)
