@@ -4,10 +4,38 @@ import type { Dictionary } from './en';
 const fr: Dictionary = {
   meta: {
     siteName: 'Brainscope Learning Center',
-    defaultTitle: 'Brainscope Learning Center | Robotique, IA et réussite scolaire à Zgharta',
+    defaultTitle: 'Brainscope Learning Center | Robotique et IA à Zgharta',
     defaultDescription:
-      'Brainscope Learning Center à Zgharta, Liban : parcours de robotique, d’IA et de programmation, soutien scolaire et développement du leadership pour enfants, adolescents et étudiants. Think • Create • Lead.',
+      'Robotique, IA et programmation pour enfants et ados, soutien scolaire et universitaire, suivi parents chaque semaine, à Zgharta. Essai gratuit.',
     ogImageAlt: 'Logo de Brainscope Learning Center avec la devise Think, Create, Lead',
+  },
+  // Search titles (shown as '<title> | site name') and unique meta descriptions per page (120–160 characters).
+  seo: {
+    about: {
+      title: 'À propos et fondateurs',
+      description:
+        'Découvrez Brainscope Learning Center à Zgharta et ses fondateurs, Bassam Eter et Marie Deeb, entre ingénierie, enseignement et communication.',
+    },
+    programs: {
+      title: 'Programmes robotique, IA et soutien',
+      description:
+        'Robo Kids, Falcon Track, IA et Python, soutien scolaire, coaching devoirs, soutien universitaire et ateliers pour écoles à Zgharta, Liban-Nord.',
+    },
+    book: {
+      title: 'Réserver un essai gratuit',
+      description:
+        'Réservez une séance d’essai gratuite à Zgharta : envoyez un court formulaire, nous fixons l’horaire sur WhatsApp, puis votre enfant essaie un vrai cours.',
+    },
+    contact: {
+      title: 'Contact et adresse à Zgharta',
+      description:
+        'Brainscope Learning Center, route Tripoli–Zgharta, Zgharta. Appelez ou écrivez sur WhatsApp au +961 81 171 031, ou suivez-nous sur Instagram.',
+    },
+    faq: {
+      title: 'Questions fréquentes',
+      description:
+        'Réponses sur les âges, les programmes, la séance d’essai gratuite, l’adresse et le déroulement des cours chez Brainscope Learning Center à Zgharta.',
+    },
   },
   a11y: {
     skipToContent: 'Aller au contenu principal',

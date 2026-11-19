@@ -16,9 +16,8 @@ const target = `${localizedPath(locale, `/${page}/`)}${hash ? `#${hash}` : ''}`;
 <html lang={locale}>
   <head>
     <meta charset="utf-8" />
-    <meta name="robots" content="noindex" />
+    <meta name="robots" content="noindex, follow" />
     <meta http-equiv="refresh" content={`0; url=${target}`} />
-    <link rel="canonical" href={target} />
     <title>Brainscope</title>
   </head>
   <body>

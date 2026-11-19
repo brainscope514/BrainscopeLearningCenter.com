@@ -12,6 +12,6 @@ const locale = Astro.params.locale as Locale;
 const t = getDictionary(locale);
 ---
 
-<BaseLayout locale={locale} title={t.nav.contact}>
+<BaseLayout locale={locale} title={t.seo.contact.title} description={t.seo.contact.description}>
   <Contact locale={locale} headingLevel="h1" />
 </BaseLayout>

@@ -9,7 +9,9 @@ interface Props {
 }
 const { locale, variant = 'compact' } = Astro.props;
 const t = getDictionary(locale);
-const subpath = stripLocale(Astro.url.pathname);
+// On the 404 page there is no translated twin, so the switcher goes to each language's home page.
+const rawSubpath = stripLocale(Astro.url.pathname);
+const subpath = /^\/404\/?$/.test(rawSubpath) ? '/' : rawSubpath;
 const SHORT: Record<Locale, string> = { en: 'EN', fr: 'FR', ar: 'AR' };
 ---
 

@@ -21,6 +21,8 @@ interface Props {
 const { locale, id = 'faq', ids, seeAllHref, headingLevel, tone = 'deep' } = Astro.props;
 const t = getDictionary(locale);
 const all = getFaq(locale);
+// Sub-headings sit one level below the section title (h2 when the section is the page's h1).
+const Sub = Astro.props.headingLevel === 'h1' ? 'h2' : 'h3';
 const entries = ids ? ids.map((key) => all.find((e) => e.id === key)).filter((e) => e !== undefined) : all;
 ---
 
@@ -29,7 +31,7 @@ const entries = ids ? ids.map((key) => all.find((e) => e.id === key)).filter((e)
     {
       entries.map((entry) => (
         <div>
-          <h3>
+          <Sub>
             <button
               type="button"
               id={`${id}-q-${entry.id}`}
@@ -41,7 +43,7 @@ const entries = ids ? ids.map((key) => all.find((e) => e.id === key)).filter((e)
               {entry.q}
               <span class="faq__icon relative size-4 shrink-0" aria-hidden="true" />
             </button>
-          </h3>
+          </Sub>
           <div id={`${id}-a-${entry.id}`} role="region" aria-labelledby={`${id}-q-${entry.id}`} class="pb-6 text-ink-muted" data-faq-a>
             {entry.a}
           </div>

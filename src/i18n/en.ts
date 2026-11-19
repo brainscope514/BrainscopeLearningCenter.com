@@ -2,10 +2,38 @@
 const en = {
   meta: {
     siteName: 'Brainscope Learning Center',
-    defaultTitle: 'Brainscope Learning Center | Robotics, AI & Academic Excellence in Zgharta',
+    defaultTitle: 'Brainscope Learning Center | Robotics & AI in Zgharta',
     defaultDescription:
-      'Brainscope Learning Center in Zgharta, Lebanon: robotics, AI and programming tracks, academic support and leadership development for kids, teens and university students. Think • Create • Lead.',
+      'Robotics, AI and programming for kids and teens, school and university support, and weekly parent follow-up in Zgharta, North Lebanon. Book a free trial.',
     ogImageAlt: 'Brainscope Learning Center logo with the tagline Think, Create, Lead',
+  },
+  // Search titles (shown as '<title> | site name') and unique meta descriptions per page (120–160 characters).
+  seo: {
+    about: {
+      title: 'About Us & Founders',
+      description:
+        'Meet Brainscope Learning Center in Zgharta and its founders, Bassam Eter and Marie Deeb, who combine engineering, teaching and communication.',
+    },
+    programs: {
+      title: 'Robotics, AI & Tutoring Programs',
+      description:
+        'Robo Kids, Falcon Track, AI & Python, academic support, homework coaching, university support and school workshops in Zgharta, North Lebanon.',
+    },
+    book: {
+      title: 'Book a Free Trial Session',
+      description:
+        'Book a free trial session at Brainscope in Zgharta: send a short form, we agree on a time on WhatsApp, then your child tries a real class.',
+    },
+    contact: {
+      title: 'Contact & Location in Zgharta',
+      description:
+        'Find Brainscope Learning Center on the Tripoli–Zgharta Road in Zgharta. Call or WhatsApp +961 81 171 031, or follow us on Instagram.',
+    },
+    faq: {
+      title: 'Frequently Asked Questions',
+      description:
+        'Answers about ages, programs, free trial sessions, location and how classes work at Brainscope Learning Center in Zgharta, North Lebanon.',
+    },
   },
   a11y: {
     skipToContent: 'Skip to main content',

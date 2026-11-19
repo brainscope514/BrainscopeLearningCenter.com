@@ -15,6 +15,8 @@ interface Props {
 const { locale } = Astro.props;
 const t = getDictionary(locale);
 const hours = HOURS?.[locale] ?? null;
+// Sub-headings sit one level below the section title (h2 when the section is the page's h1).
+const Sub = Astro.props.headingLevel === 'h1' ? 'h2' : 'h3';
 ---
 
 <Section id="contact" headingLevel={Astro.props.headingLevel} eyebrow={t.contact.eyebrow} title={t.contact.title} intro={t.contact.intro} tone="light">
@@ -23,7 +25,7 @@ const hours = HOURS?.[locale] ?? null;
       <div class="flex gap-4">
         <Icon name="pin" class="mt-1 size-6 shrink-0 text-violet" />
         <div>
-          <h3 class="font-semibold text-white">{t.contact.addressLabel}</h3>
+          <Sub class="font-semibold text-white">{t.contact.addressLabel}</Sub>
           <p class="mt-1 text-ink-muted">{t.footer.address}</p>
           <a href={mapSearchUrl()} target="_blank" rel="noopener" class="mt-2 inline-block text-sm font-semibold text-violet underline-offset-4 hover:underline">
             {t.contact.mapOpen}<span class="sr-only"> {t.a11y.opensInNewTab}</span>
@@ -35,7 +37,7 @@ const hours = HOURS?.[locale] ?? null;
           <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" stroke-linecap="round" />
         </svg>
         <div>
-          <h3 class="font-semibold text-white">{t.contact.hoursLabel}</h3>
+          <Sub class="font-semibold text-white">{t.contact.hoursLabel}</Sub>
           <p class="mt-1 text-ink-muted">{hours ?? t.contact.hoursPending}</p>
         </div>
       </div>

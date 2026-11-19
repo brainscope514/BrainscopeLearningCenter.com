@@ -11,6 +11,8 @@ interface Props {
   locale: Locale;
 }
 const t = getDictionary(Astro.props.locale);
+// Sub-headings sit one level below the section title (h2 when the section is the page's h1).
+const Sub = Astro.props.headingLevel === 'h1' ? 'h2' : 'h3';
 ---
 
 <Section id="about" headingLevel={Astro.props.headingLevel} eyebrow={t.about.eyebrow} title={t.about.title} intro={t.about.intro} tone="circuit">
@@ -23,7 +25,7 @@ const t = getDictionary(Astro.props.locale);
           <li class="flex gap-5 lg:flex-col lg:gap-6">
             <IconBadge name={pillar.icon} size="lg" class="bg-navy-800" />
             <div>
-              <h3 class="text-xl font-bold text-white">{pillar.title}</h3>
+              <Sub class="text-xl font-bold text-white">{pillar.title}</Sub>
               <p class="mt-2 text-ink-muted">{pillar.text}</p>
             </div>
           </li>

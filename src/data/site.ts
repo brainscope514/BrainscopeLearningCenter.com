@@ -34,6 +34,16 @@ export const SOCIAL = {
 } as const;
 
 /** Query for the click-to-load map embed (the share link above cannot be embedded). Links use SOCIAL.googleMaps. */
+/**
+ * Search engine ownership verification (Google Search Console / Bing Webmaster Tools).
+ * Paste only the code from the "HTML tag" method, e.g. for <meta name="google-site-verification" content="abc123">
+ * put 'abc123'. Leave empty until you have it.
+ */
+export const SEARCH_VERIFICATION = {
+  google: '',
+  bing: '',
+} as const;
+
 export const MAP_QUERY = 'Brainscope Learning Center, Zgharta, Lebanon';
 export const mapSearchUrl = (): string =>
   isConfirmed(SOCIAL.googleMaps)

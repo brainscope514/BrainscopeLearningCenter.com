@@ -225,6 +225,7 @@ export function createNeuralCanvas(canvas: HTMLCanvasElement, options: NeuralCan
   let arrivals: { x: number; y: number; t: number }[] = [];
   let nextSpawn = 0;
   let pulseRaf = 0;
+  let pulseTimer = 0; // sleeps between signals so nothing is redrawn while the network is still
 
   const snapshot = () => {
     backdrop.width = canvas.width;
@@ -337,18 +338,33 @@ export function createNeuralCanvas(canvas: HTMLCanvasElement, options: NeuralCan
     }
     pulses = pulses.filter((p) => now - p.start < p.duration);
     arrivals = arrivals.filter((a) => now - a.t < 900);
-    drawPulses(now);
+    drawPulses(now); // with nothing in flight this draws the clean network once, erasing the last ring
+    if (pulses.length === 0 && arrivals.length === 0) {
+      // Idle: no animation frames until the next signal is due (saves battery and main-thread time).
+      pulseRaf = 0;
+      pulseTimer = window.setTimeout(() => {
+        pulseTimer = 0;
+        if (pulsesShouldRun()) pulseRaf = requestAnimationFrame(pulseFrame);
+      }, Math.max(0, nextSpawn - now));
+      return;
+    }
     pulseRaf = requestAnimationFrame(pulseFrame);
   };
   const pulsesShouldRun = () => staticFrame && withPulses && inView && pageVisible;
   const startPulses = () => {
-    if (pulseRaf || !pulsesShouldRun()) return;
-    nextSpawn = performance.now() + 900;
-    pulseRaf = requestAnimationFrame(pulseFrame);
+    if (pulseRaf || pulseTimer || !pulsesShouldRun()) return;
+    // First signal a few seconds after start, once the page has settled.
+    nextSpawn = performance.now() + 2500;
+    pulseTimer = window.setTimeout(() => {
+      pulseTimer = 0;
+      if (pulsesShouldRun()) pulseRaf = requestAnimationFrame(pulseFrame);
+    }, 2500);
   };
   const stopPulses = () => {
     cancelAnimationFrame(pulseRaf);
+    window.clearTimeout(pulseTimer);
     pulseRaf = 0;
+    pulseTimer = 0;
     pulses = [];
     arrivals = [];
   };

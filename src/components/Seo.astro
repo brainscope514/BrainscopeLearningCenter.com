@@ -1,7 +1,7 @@
 ---
 // <head> SEO: title, description, canonical, hreflang alternates, Open Graph, Twitter, JSON-LD.
 import { LOCALES, LOCALE_TAGS, type Locale, getDictionary, localizedPath, stripLocale, withBase } from '@/i18n';
-import { CONTACT, SITE, SOCIAL, isConfirmed } from '@/data/site';
+import { CONTACT, SEARCH_VERIFICATION, SITE, SOCIAL, isConfirmed } from '@/data/site';
 import { getFaq } from '@/data/faq';
 
 interface Props {
@@ -80,7 +80,10 @@ const structuredData = { '@context': 'https://schema.org', '@graph': [orgNode, .
 
 <title>{pageTitle}</title>
 <meta name="description" content={pageDescription} />
-{noindex && <meta name="robots" content="noindex" />}
+{noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />}
+{SEARCH_VERIFICATION.google && <meta name="google-site-verification" content={SEARCH_VERIFICATION.google} />}
+{SEARCH_VERIFICATION.bing && <meta name="msvalidate.01" content={SEARCH_VERIFICATION.bing} />}
+<link rel="alternate" type="text/plain" title="llms.txt" href={withBase('/llms.txt')} />
 {
   !noindex && (
     <>
